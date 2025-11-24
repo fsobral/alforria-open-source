@@ -1,0 +1,240 @@
+
+# Presolve option: "off", "choose" or "on"
+# [type: string, advanced: false, default: "choose"]
+presolve = on
+
+# Solver option: "simplex", "choose", "ipm" or "pdlp". If "simplex"/"ipm"/"pdlp" is chosen then, for a MIP (QP) the integrality constraint (quadratic term) will be ignored
+# [type: string, advanced: false, default: "choose"]
+solver = choose
+
+# Parallel option: "off", "choose" or "on"
+# [type: string, advanced: false, default: "choose"]
+parallel = on
+
+# Run IPM crossover: "off", "choose" or "on"
+# [type: string, advanced: false, default: "on"]
+run_crossover = on
+
+# Time limit (seconds)
+# [type: double, advanced: false, range: [0, inf], default: inf]
+time_limit = 7200
+
+# Compute cost, bound, RHS and basic solution ranging: "off" or "on"
+# [type: string, advanced: false, default: "off"]
+ranging = off
+
+# Limit on |cost coefficient|: values greater than or equal to this will be treated as infinite
+# [type: double, advanced: false, range: [1e+15, inf], default: 1e+20]
+infinite_cost = 1e+20
+
+# Limit on |constraint bound|: values greater than or equal to this will be treated as infinite
+# [type: double, advanced: false, range: [1e+15, inf], default: 1e+20]
+infinite_bound = 1e+20
+
+# Lower limit on |matrix entries|: values less than or equal to this will be treated as zero
+# [type: double, advanced: false, range: [1e-12, inf], default: 1e-09]
+small_matrix_value = 1e-09
+
+# Upper limit on |matrix entries|: values greater than or equal to this will be treated as infinite
+# [type: double, advanced: false, range: [1, inf], default: 1e+15]
+large_matrix_value = 1e+15
+
+# Primal feasibility tolerance
+# [type: double, advanced: false, range: [1e-10, inf], default: 1e-07]
+primal_feasibility_tolerance = 1e-07
+
+# Dual feasibility tolerance
+# [type: double, advanced: false, range: [1e-10, inf], default: 1e-07]
+dual_feasibility_tolerance = 1e-07
+
+# IPM optimality tolerance
+# [type: double, advanced: false, range: [1e-12, inf], default: 1e-08]
+ipm_optimality_tolerance = 1e-08
+
+# Objective bound for termination of the dual simplex solver
+# [type: double, advanced: false, range: [-inf, inf], default: inf]
+objective_bound = inf
+
+# Objective target for termination of the MIP solver
+# [type: double, advanced: false, range: [-inf, inf], default: -inf]
+objective_target = -inf
+
+# Random seed used in HiGHS
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 0]
+random_seed = 0
+
+# Number of threads used by HiGHS (0: automatic)
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 0]
+threads = 0
+
+# Exponent of power-of-two bound scaling for model
+# [type: integer, advanced: false, range: {-2147483647, 2147483647}, default: 0]
+user_bound_scale = 0
+
+# Exponent of power-of-two cost scaling for model
+# [type: integer, advanced: false, range: {-2147483647, 2147483647}, default: 0]
+user_cost_scale = 0
+
+# Strategy for simplex solver 0 => Choose; 1 => Dual (serial); 2 => Dual (PAMI); 3 => Dual (SIP); 4 => Primal
+# [type: integer, advanced: false, range: {0, 4}, default: 1]
+simplex_strategy = 1
+
+# Simplex scaling strategy: off / choose / equilibration / forced equilibration / max value 0 / max value 1 (0/1/2/3/4/5)
+# [type: integer, advanced: false, range: {0, 5}, default: 1]
+simplex_scale_strategy = 1
+
+# Strategy for simplex dual edge weights: Choose / Dantzig / Devex / Steepest Edge (-1/0/1/2)
+# [type: integer, advanced: false, range: {-1, 2}, default: -1]
+simplex_dual_edge_weight_strategy = -1
+
+# Strategy for simplex primal edge weights: Choose / Dantzig / Devex / Steepest Edge (-1/0/1/2)
+# [type: integer, advanced: false, range: {-1, 2}, default: -1]
+simplex_primal_edge_weight_strategy = -1
+
+# Iteration limit for simplex solver when solving LPs, but not subproblems in the MIP solver
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+simplex_iteration_limit = 2147483647
+
+# Limit on the number of simplex UPDATE operations
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 5000]
+simplex_update_limit = 5000
+
+# Maximum level of concurrency in parallel simplex
+# [type: integer, advanced: false, range: {1, 8}, default: 8]
+simplex_max_concurrency = 8
+
+# Enables or disables solver output
+# [type: bool, advanced: false, range: {false, true}, default: true]
+output_flag = true
+
+# Enables or disables console logging
+# [type: bool, advanced: false, range: {false, true}, default: true]
+log_to_console = true
+
+# Solution file
+# [type: string, advanced: false, default: ""]
+solution_file = 
+
+# Log file
+# [type: string, advanced: false, default: ""]
+log_file = HiGHS.log
+
+# Write the primal and dual solution to a file
+# [type: bool, advanced: false, range: {false, true}, default: false]
+write_solution_to_file = false
+
+# Style of solution file (raw = computer-readable, pretty = human-readable): -1 => HiGHS old raw (deprecated); 0 => HiGHS raw; 1 => HiGHS pretty; 2 => Glpsol raw; 3 => Glpsol pretty; 4 => HiGHS sparse raw
+# [type: integer, advanced: false, range: {-1, 4}, default: 0]
+write_solution_style = 0
+
+# Location of cost row for Glpsol file: -2 => Last; -1 => None; 0 => None if empty, otherwise data file location; 1 <= n <= num_row => Location n; n > num_row => Last
+# [type: integer, advanced: false, range: {-2, 2147483647}, default: 0]
+glpsol_cost_row_location = 0
+
+# Write model file
+# [type: string, advanced: false, default: ""]
+write_model_file = 
+
+# Write the model to a file
+# [type: bool, advanced: false, range: {false, true}, default: false]
+write_model_to_file = false
+
+# Whether MIP symmetry should be detected
+# [type: bool, advanced: false, range: {false, true}, default: true]
+mip_detect_symmetry = true
+
+# Whether MIP restart is permitted
+# [type: bool, advanced: false, range: {false, true}, default: true]
+mip_allow_restart = true
+
+# MIP solver max number of nodes
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+mip_max_nodes = 2147483647
+
+# MIP solver max number of nodes where estimate is above cutoff bound
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+mip_max_stall_nodes = 2147483647
+
+# Whether improving MIP solutions should be saved
+# [type: bool, advanced: false, range: {false, true}, default: false]
+mip_improving_solution_save = false
+
+# Whether improving MIP solutions should be reported in sparse format
+# [type: bool, advanced: false, range: {false, true}, default: false]
+mip_improving_solution_report_sparse = false
+
+# File for reporting improving MIP solutions: not reported for an empty string ""
+# [type: string, advanced: false, default: ""]
+mip_improving_solution_file = 
+
+# MIP solver max number of leave nodes
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+mip_max_leaves = 2147483647
+
+# Limit on the number of improving solutions found to stop the MIP solver prematurely
+# [type: integer, advanced: false, range: {1, 2147483647}, default: 2147483647]
+mip_max_improving_sols = 2147483647
+
+# Maximal age of dynamic LP rows before they are removed from the LP relaxation in the MIP solver
+# [type: integer, advanced: false, range: {0, 32767}, default: 10]
+mip_lp_age_limit = 10
+
+# Maximal age of rows in the MIP solver cutpool before they are deleted
+# [type: integer, advanced: false, range: {0, 1000}, default: 30]
+mip_pool_age_limit = 30
+
+# Soft limit on the number of rows in the MIP solver cutpool for dynamic age adjustment
+# [type: integer, advanced: false, range: {1, 2147483647}, default: 10000]
+mip_pool_soft_limit = 10000
+
+# Minimal number of observations before MIP solver pseudo costs are considered reliable
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 8]
+mip_pscost_minreliable = 8
+
+# Minimal number of entries in the MIP solver cliquetable before neighbourhood queries of the conflict graph use parallel processing
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 100000]
+mip_min_cliquetable_entries_for_parallelism = 100000
+
+# MIP feasibility tolerance
+# [type: double, advanced: false, range: [1e-10, inf], default: 1e-06]
+mip_feasibility_tolerance = 1e-06
+
+# Effort spent for MIP heuristics
+# [type: double, advanced: false, range: [0, 1], default: 0.05]
+mip_heuristic_effort = 1
+
+# Tolerance on relative gap, |ub-lb|/|ub|, to determine whether optimality has been reached for a MIP instance
+# [type: double, advanced: false, range: [0, inf], default: 0.0001]
+mip_rel_gap = 0.0001
+
+# Tolerance on absolute gap of MIP, |ub-lb|, to determine whether optimality has been reached for a MIP instance
+# [type: double, advanced: false, range: [0, inf], default: 1e-06]
+mip_abs_gap = 1e-06
+
+# MIP minimum logging interval
+# [type: double, advanced: false, range: [0, inf], default: 5]
+mip_min_logging_interval = 5
+
+# Iteration limit for IPM solver
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+ipm_iteration_limit = 2147483647
+
+# Use native termination for PDLP solver: Default = false
+# [type: bool, advanced: false, range: {false, true}, default: false]
+pdlp_native_termination = false
+
+# Scaling option for PDLP solver: Default = true
+# [type: bool, advanced: false, range: {false, true}, default: true]
+pdlp_scaling = true
+
+# Iteration limit for PDLP solver
+# [type: integer, advanced: false, range: {0, 2147483647}, default: 2147483647]
+pdlp_iteration_limit = 2147483647
+
+# Restart mode for PDLP solver: 0 => none; 1 => GPU (default); 2 => CPU 
+# [type: integer, advanced: false, range: {0, 2}, default: 1]
+pdlp_e_restart_method = 1
+
+# Duality gap tolerance for PDLP solver: Default = 1e-4
+# [type: double, advanced: false, range: [1e-12, inf], default: 0.0001]
+pdlp_d_gap_tol = 0.0001

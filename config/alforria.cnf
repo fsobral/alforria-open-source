@@ -1,0 +1,9 @@
+# Diretorio para a criacao do(s) relatorio(s)
+RELDIR relatorios/
+
+# Numero maximo de impedimentos no formulario
+MAXIMPEDIMENTOS 5
+
+# Inicio e fim do semestre
+SEM1_INI 2025-03-31
+SEM2_INI 2025-08-18

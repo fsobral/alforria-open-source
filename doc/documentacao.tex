@@ -1,0 +1,290 @@
+\documentclass[a4paper, 12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{tabularx}
+
+\newcommand{\alforria}{\texttt{ALFORRIA}}
+\newcommand{\ttt}[1]{\texttt{#1}}
+
+\title{\alforria\ -- distribuição de encargos didáticos via
+  modelos de programação linear inteira}
+
+\author{Francisco Sobral, Depto. de Matemática, UEM\footnote{Autor
+    correspondente, \url{fncsobral@uem.br}} \and João
+  Costalonga, UFES}
+
+\date{Última atualização -- \today}
+
+\begin{document}
+
+\maketitle
+
+\chapter{Antes de começar}
+
+\section{Estrutura}
+
+\section{Arquivos de configuração}
+
+\alforria\ necessita de alguns arquivos de dados para funcionar. Os
+caminhos para cada arquivo são configurados no arquivo
+\texttt{config/paths.cfg} e são divididos em entrada e saída.
+
+Entrada:
+\begin{itemize}
+\item \ttt{GRUPOSPATH} -- Arquivo contendo os grupos de disciplinhas;
+\item \ttt{PREFPATH} -- Arquivo CSV contendo as preferências de cada
+  professor;
+\item \ttt{SARPATH} -- Arquivo de texto contendo os dados de cada
+  disciplina (horário, turmas, carga horária, etc.);
+\item \ttt{ATRIBPATH} -- Arquivo CSV com as disciplinas pré-atribuídas
+  a cada professor;
+\item \ttt{FANTPATH} -- Arquivo CSV com as disciplinas que existem,
+  mas são ministradas em conjunto com outras (sobreposição total de
+  dias e horários);
+\end{itemize}
+
+Saída:
+\begin{itemize}
+\item \ttt{DATPATH} -- Arquivo .DAT com todos os dados analizados, que
+  será utilizado pelo algoritmo de otimização;
+\item \ttt{DAT2PATH} -- Arquivo (temporário) que é gerado pelo
+  programa, para que o processo de otimização possa ocorrer
+  iterativamente;
+\item \ttt{SOLPATH} -- Arquivo de solução que será gerado pelo
+  algoritmo de otimização
+\end{itemize}
+Um usuário não necessita modificar os parâmetros de saída, apenas os
+de entrada.
+
+\subsection{Grupos} \label{conf:grupos}
+
+Neste arquivo estão descritos os grupos de disciplinas. Ele é usado
+para calcular o grau de satisfação de um professor por ministrar uma
+disciplina. Existem os grupos \textbf{canônicos} (C) e os grupos
+\textbf{não canônicos} (N). A diferença entre eles é que os
+professores podem dar diferentes graus de preferência aos grupos
+canônicos.
+
+Este arquivo dever estar no formato de texto simples \texttt{.txt},
+com codificação UTF-8 e pode conter linhas em branco. É importante que
+a ordem dos grupos seja a mesma usada no arquivo de preferências.
+
+Cada linha do arquivo é dada por três partes
+\begin{center} \tt
+  C\_ou\_N Nome\_do\_grupo Lista\_de\_turmas
+\end{center}
+
+Como um exemplo, temos o grupo \textbf{canônico} CALC1 e o \textbf{não
+  canônico} Algebra\_de\_Lie:
+\begin{flushleft} \tt
+C CALC1 199\_S1 1422 1583 2526 2870 3059 3203 4545 5172 6073\\
+N Algebra\_de\_Lie	3314
+\end{flushleft}
+O mais importante é que as disciplinas dos grupos canônicos estejam
+corretamente classificadas. Todas as disciplinas que estiverem no
+arquivo de disciplinas e não forem canônicas serão automaticamente
+classificadas com \texttt{N} pelo algoritmo e terão um grupo com nome
+igual ao seu.
+
+Um outro comentário importante é o fato de disciplinas anuais serem
+separadas por semestre. Podemos ver que a disciplina 199 é anual, mas
+o conteúdo associado ao grupo CALC1 é ministrado apenas no primeiro
+semestre, por isso é necessário o uso de \texttt{\_S1} ou
+\texttt{\_S2}. Geralmente o usuário do programa não precisa se
+preocupar com isso, pois tais informações são extraídas
+automaticamente do arquivo de classes usado pelo departamento. Para
+tal tarefa, existe uma planilha do Google com as classes das
+disciplinas, para as disciplinas canônicas. Essa planilha possui um
+\textit{script} embutido chamado ``Gerador'' que gera no mesmo
+diretório um arquivo de grupos com os dados presentes na
+planilha. Rode o \textit{script} sempre ao adicionar/remover/atualizar
+disciplinas, lembrando sempre que a ordem de grupos canônicos importa.
+
+\paragraph{O que é importante saber}
+
+\begin{itemize}
+\item A ordem dos grupos canônicos no arquivo deve ser igual à ordem
+  das colunas do arquivo de preferências (ver~\ref{conf:pref}).
+
+\item Disciplinas anuais devem ser classificadas por semestre, usando
+  a extensão \texttt{\_S1} e \texttt{\_S2}.
+
+\item Antes da primeira rodada, verifique o arquivo de classes e use o
+  \textit{script} para gerar um arquivo de grupos atualizado.
+\end{itemize}
+
+\subsection{Preferências} \label{conf:pref}
+
+Cada linha do arquivo de preferências contém todas as preferências de
+um professor. O arquivo é do tipo CSV, mas cada coluna é separada por
+uma tabulação ao invés de espaços em branco. Geralmente, o arquivo
+\texttt{.csv} é gerado automaticamente a partir de uma planilha que
+foi preenchida via formulário ou manualmente. Por conta disso,
+supõe-se que ela está ordenada de forma \textbf{crescente nas datas de
+  preenchimento}. Caso um professor preencha 2 vezes a mesma tabela,
+apenas a última entrada será considerada.
+
+No nosso caso, a planilha é gerada pelo preenchimento de um formulário
+\textit{online} do Google. Depois, é necessário fazer 3 tratamentos
+básicos para que possa ser utilizada pelo programa:
+\begin{enumerate}
+\item Remoção dos nomes das colunas. Como foi dito, cada linha é
+  referente a um professor;
+\item Remoção das quebras de linha na coluna de comentários
+  adicionais. A última coluna é reservada para o professor colocar
+  comentários adicionais para à Comissão de Horário. Infelizmente,
+  caso haja uma quebra de linha, esta é encarada como uma nova entrada
+  de professor. Desta forma, deve-se colocar os comentários em uma só
+  linha.
+\item Verificar se não há nenhum texto estranho ao \LaTeX\ nas entradas
+  fornecidas pelo professor. Por exemplo, se ele escreveu \verb+R^n+
+  no texto, o \LaTeX\ vai dar erro de modo matemático na hora de
+  compilar esse texto. Da mesma forma, isso frequentemente acontece
+  com o \textit{underline}. No caso de endereços de e-mail, tal
+  problema é tratado automaticamente no programa.
+\item Salvar a planilha como um arquivo CSV, mas com a diferença que
+  cada coluna será separada por uma tabulação (\texttt{TAB}) ao invés
+  de vírgula. Qualquer outra opção de conversão deve ser removida
+  (como separar por vírgula, colocar campos entre aspas, etc.).
+\end{enumerate}
+
+Atualmente, utilizando os serviços do Google, a forma mais fácil de
+gerar tal planilha é através dos seguintes passos:
+
+\begin{enumerate}
+\item Crie um formulário com base no formulário padrão. Lembre-se que
+  cada alteração tem que ser pensada, pois a ordem das perguntas
+  altera a forma de leitura pelo programa;
+
+\item Converta as respostas em uma planilha;
+
+\item Inclua o \textit{script} de conversão na planilha e rode-o. Uma
+  nova aba será criada;
+
+\item Abra a aba e exporte-a como um arquivo \verb+.tsv+, salvando no
+  diretório de preferência.
+\end{enumerate}
+
+Caso deseje-se criar o arquivo \texttt{.csv} na mão, é necessário
+utilizar as informações da Tabela~\ref{conf:pref:tab}. A seguir
+algumas explicações adicionais sobre algumas colunas do arquivo.
+
+\begin{table}[ht!]
+  \centering
+  \begin{tabularx}{0.95\textwidth}{c|X}
+    \hline
+    Coluna & Explicação \\ \hline \hline
+
+    1 & \textbf{Ignorada}. Data e hora de preenchimento da linha,
+    gerada pelo Google. É usada apenas para ordenação das linhas em
+    forma crescente no tempo.\\  \hline
+
+    2 & Nome e sobrenome do professor \\ \hline
+
+    3 & Identificação única. Geralmente o funcional do professor. \\ \hline
+
+    4 & E-mail do professor \\ \hline
+
+    5 & Telefone para contato \\ \hline
+
+    6 & Quantidade de horas pré-atribuídas ao professor no primeiro
+    semestre. Nessa coluna incluem-se todos os descontos por cargos,
+    disciplinas (válidas) da pós-graduação. \textbf{Disciplinas
+      pré-atribuídas da graduação e projetos de pesquisa não
+      entram}. \\ \hline
+
+    7 & Idem ao anterior, mas para o segundo semestre. \\ \hline
+
+    8 & Explicação para a comissão sobre as cargas horárias
+    pré-atribuídas \\ \hline
+
+    9 & Tipo de licença a ser tirada no ano. Licença anual
+    automaticamente remove o professor da distribuição. \\ \hline
+
+    10 & Regime de trabalho: efetivo ou temporário. Um professor
+    efetivo sem TIDE deve entrar como temporário. \\ \hline
+
+    11-17 & Números inteiros de 0 a 10 representando os parâmetros de
+    satisfação do algoritmo. Mais detalhes em~\ref{conf:pref:param} \\
+    \hline
+
+    18 & Grupos canônicos para os quais o professor é inapto a
+    lecionar. Nesta coluna os nomes dos grupos devem ser separados por
+    vírgulas. Maiúsculas, minúsculas e acentos não importam. Mais
+    detalhes em~\ref{conf:pref:inap} \\ \hline
+
+    19-31 & Números inteiros de 0 a 10 representando as preferências
+    para lecionar disciplinas dos grupos canônicos. As colunas devem
+    seguir a ordem das linhas do arquivo
+    \verb+grupos.txt+. Ver~\ref{conf:grupos} e verificar o formulário
+    \textit{online}. \\ \hline
+
+    32 & \texttt{SIM} ou \texttt{NAO}, representando a opção por
+    participar ou não das reuniões de departamento.\\ \hline
+
+    33 & \texttt{COMPACTO} ou \texttt{ESPARSOS}, representando a opção
+    por aulas compactadas (em sequência) ou com muitas janelas
+    (esparso). \\ \hline
+
+    & representando a opção do professor por detalhar ou resumir suas
+    preferências pelo horário. \\ \hline
+  \end{tabularx}
+  \caption{\label{conf:pref:tab} Explicação de cada uma das colunas
+    do arquivo de preferência dos professores.}
+\end{table}
+
+\subsubsection{Inaptidões}
+\label{conf:pref:inap}
+
+Atualmente, as opções de inaptidão que o formulário oferece são:
+\texttt{CALC2A}, \texttt{CALC2B}, \texttt{EDO}, \texttt{EDP},
+\texttt{NUMERICO}, \texttt{FINANCEIRA}, \texttt{MD1}, \texttt{MD2} e
+\texttt{ENSINO}. Por razões óbvias, não é oferecida a possibilidade de
+ser inapto a lecionar Cálculo I, Geometria Analítica, Álgebra Linear e
+Matemática Básica.
+
+\subsubsection{Parâmetros relativos de preferência}
+\label{conf:pref:param}
+
+Atualmente os professores podem escolher a importância
+\underline{relativa} entre 7 parâmetros, que nortearão o algoritmo na
+busca por uma solução que minimize a insatisfação geral. Cada coluna
+segue a ordem a seguir, onde 0 é nenhuma importância, 5 significa
+indiferença e 10 significa muita importância. As notas são sempre
+normalizadas.
+
+\begin{itemize}
+\item \textbf{Disciplinas}: importância dada em lecionar as
+  disciplinas canônicas que gosta;
+\item \textbf{Número de disciplinas}: importância dada em não lecionar
+  uma grande quantidade de disciplinas;
+\item \textbf{Número de disciplinas distintas}: importância dada em
+  não lecionar uma grande quantidade de grupos distintos de
+  disciplinas
+\item \textbf{Horário}: importância dada à satisfação das preferências
+  de horário;
+\item \textbf{Carga horária}: importância dada em lecionar uma carga
+  horária reduzida;
+\item \textbf{Janelas / Horários compactos}: importância dada em
+  lecionar disciplinas em horários seguidos (compactos) ou espalhados
+  (janelas); preferência por janelas ou horários compactos,
+  respectivamente
+\item \textbf{Manhã e noite}: importância dada à não atribuição de
+  aulas de manhã e de noite em um mesmo dia.
+\end{itemize}
+
+Algumas preferências estão associadas com outras preferências, como os
+horários. Ou seja, não faz sentido alguém preencher detalhadamente as
+preferências por horário, por exemplo, se der importância 0 para esse
+parâmetro. O sistema irá ignorar tais preferências. O mesmo pode ser
+dito para Janelas e Disciplinas.
+
+É claro que existe grande tentação em colocar 10 para tudo, mas,
+devido à normalização, isso será equivalente a colocar 5 para tudo. O
+preenchimento deve sempre ser feito sob o raciocínio da importância de
+um parâmetro com relação os outros.
+
+\end{document}

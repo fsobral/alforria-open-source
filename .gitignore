@@ -1,2 +1,59 @@
-# Emacs
+# Ignoring sensitive data
+dados/
+
+# Ignoring emacs temporary files
 *~
+\#*\#
+
+# Ignoring generic files
+*.log
+*.xls
+*.xlsx
+*.ods
+
+# Ignoring generated files in directory 'relatorios'
+relatorios
+
+# Ignoring LaTeX files
+doc/*.aux
+doc/*.log
+doc/*.out
+
+# Ignoring Gurobi files when solving the problem
+lp/*.log
+lp/*.sol
+lp/*.dat
+lp/*.lp
+lp/alforria.mod
+lp/alforria copy*.jl
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+*env/
+*venv/
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+dados/ch_table.csv
+dados/relatorio_geral.pdf
