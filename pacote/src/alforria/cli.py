@@ -1,6 +1,6 @@
 import typer
 
-# from .scaffold import criar_projeto
+from .construtor import criar_projeto
 
 app = typer.Typer()
 
@@ -8,7 +8,7 @@ app = typer.Typer()
 @app.command()
 def init(nome_projeto: str):
     """Cria novo projeto"""
-    # criar_projeto(nome_projeto)
+    criar_projeto(nome_projeto)
     print(f"✅ Projeto '{nome_projeto}' criado!")
 
 
