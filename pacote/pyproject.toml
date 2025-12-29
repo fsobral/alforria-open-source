@@ -1,6 +1,6 @@
 [project]
 name = "alforria"
-version = "0.1.0"
+version = "0.2.0"
 description = "Teacher Scheduler"
 authors = [
     {name = "Your Name",email = "you@example.com"}
@@ -9,7 +9,8 @@ readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
 ]
-
+# precisa adicionar as dependencies, tive que add manualmente
+# unidecode, promptoolkit? (acho q da pra tirar esse)
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

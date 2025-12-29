@@ -1,0 +1,55 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{color,colortbl,ctable}
+\usepackage{multicol}
+\usepackage[top=1.5cm, bottom=1.5cm, left=1.5cm, right=1.5cm]{geometry}
+
+\begin{document}
+
+\section*{Como interpretar o relatório?}
+
+\begin{itemize}
+\item \textbf{Carga horária prévia}: horas dedicadas à pós-graduação,
+  cargos, etc.
+\item \textbf{Carga horária anual}: carga horária total do docente,
+  incluindo a prévia.
+\item \textbf{Satisfação}: índice de satisfação atingido pelo
+  programa, com base nos valores do formulário, onde 0 é muito
+  insatisfeito e 10 é muito satisfeito.
+\item \textbf{Tabela de pesos e satisfação}: representa a importância
+  dada pelo docente no item associado (peso) e a satisfação atingida nesse
+  quesito (satisfação).
+  \begin{itemize}
+  \item \textbf{Disc.}: importância dada às disciplinas que gosta
+  \item \textbf{Num. disc.}: importância dada à quantidade de
+    disciplinas
+  \item \textbf{Disc. distintas}: importância dada à quantidade de
+    grupos distintos de disciplinas
+  \item \textbf{Hor.}: importância dada às preferências pelo horário
+  \item \textbf{Carga hor.}: importância dada à carga horária
+  \item \textbf{Janelas / Hor. compactos}: importância dada à
+    preferência por janelas ou horários compactos, respectivamente
+  \item \textbf{Manhã e noite}: importância dada à não atribuição de
+    aulas de manhã e de noite em um mesmo dia
+  \end{itemize}
+
+\item \textbf{Tabela de horários}: As tonalidades de cores indicam o
+  grau de satisfação preenchido no formulário. Impedimentos e licenças
+  são incolores.
+  \begin{center}
+    \begin{tabular}{|cc|}
+      \toprule
+      \cellcolor[RGB]{165,252,115} & Satisfação máxima \\ \midrule
+      \cellcolor[RGB]{176,176,176} & Satisfação mínima \\ \midrule
+      \cellcolor[gray]{1} & Impedimento/licença\\ \bottomrule
+    \end{tabular}
+  \end{center}
+  
+\item \textbf{Tabela de disciplinas a lecionar}: lista de disciplinas
+  a lecionar.
+\item \textbf{Tabela de preferências de grupos}: preferências dadas
+  aos grupos de disciplinas e inaptidões.
+
+\end{itemize}

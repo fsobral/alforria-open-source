@@ -57,3 +57,7 @@ wheels/
 MANIFEST
 dados/ch_table.csv
 dados/relatorio_geral.pdf
+
+.pypirc
+
+pacote_teste/
