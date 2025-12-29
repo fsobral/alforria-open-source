@@ -651,7 +651,7 @@ converter_preferencia = {
 # ----------------------------------------------------------------------------------------------------------------------
 def ler_pref(form, grupos, max_impedimentos):
     professores = []
-    with open(form, "r") as f:
+    with open(form, "r", encoding="utf-8") as f:
         for l in f:
             p = classes.Professor()
             tokens = iter(l.split("\t"))
@@ -772,7 +772,10 @@ def ler_pref(form, grupos, max_impedimentos):
                                 pref = "INDIFERENTE"
                             p.pref_horarios_bruto[h, d] = converter_preferencia[pref]
                 for i in range(0, 5):  # Pula as posicoes em branco do formulario
-                    next(tokens)
+                    try:
+                        next(tokens)
+                    except StopIteration:
+                        pass
             else:
                 for i in range(
                     0, 3 * 5 + 2
