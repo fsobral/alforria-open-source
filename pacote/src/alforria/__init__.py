@@ -66,9 +66,10 @@ _hd_course_search = dict()
 
 
 def set_config_path(path: str):
+    global _PATHS_PATH, _ALFCFG_PATH, _CONST_PATH
     _PATHS_PATH = path + "/paths.cnf"
     _ALFCFG_PATH = path + "/alforria.cnf"
-    _CONST_PATH = path + "/con stantes.cnf"
+    _CONST_PATH = path + "/constantes.cnf"
 
 
 def __gen_stats__(params):
