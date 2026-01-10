@@ -1,3 +1,7 @@
+"""Pacote Alforria"""
+
+__version__ = "0.3.0"
+
 import logging
 import re
 import sys
@@ -59,6 +63,12 @@ _course_search_id = dict()
 _course_professor_search = dict()
 
 _hd_course_search = dict()
+
+
+def set_config_path(path: str):
+    _PATHS_PATH = path + "/paths.cnf"
+    _ALFCFG_PATH = path + "/alforria.cnf"
+    _CONST_PATH = path + "/con stantes.cnf"
 
 
 def __gen_stats__(params):
