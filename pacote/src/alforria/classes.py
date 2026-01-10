@@ -656,7 +656,6 @@ class Professor:  ##############################################################
 
     # ----------------------------------------------------------------------------------------------------
     def serialize(self):
-        print(self.impedimentos)
         return {
             "nomeCompleto": self.nome_completo,
             "matricula": self.matricula,
