@@ -654,8 +654,41 @@ class Professor:  ##############################################################
             f.write("\\end{tabular} \\end{center} \\vfill\\columnbreak\n")
             f.write("\\end{multicols}\n")
 
+
+def serialize(self):
+    return {
+        "nomeCompleto": self.nome_completo,
+        "matricula": self.matricula,
+        "email": self.email,
+        "telefone": self.tel,
+        "chPrevia1": self.chprevia1,
+        "chPrevia2": self.chprevia2,
+        "pesoDisciplinas": self.peso_disciplinas,
+        "pesoHorario": self.peso_horario,
+        "pesoCargaHoraria": self.peso_cargahor,
+        "pesoDistintas": self.peso_distintas,
+        "pesoJanelas": self.peso_janelas,
+        "pesoNumDisc": self.peso_numdisc,
+        "pesoManhaNoite": self.peso_manha_noite,
+        "inapto": self.inapto,
+        "prefReuniao": self.pref_reuniao,
+        "prefJanelas": self.pref_janelas,
+        "prefGrupos": self.pref_grupos,
+        "prefHorarios": [[dia for dia in horario] for horario in self.pref_horarios],
+        "listaImpedimentos": self.lista_impedimentos,
+        "chMax": self.chmax,
+        "chMax1": self.chmax1,
+        "chMax2": self.chmax2,
+        "fantasma": self.fantasma,
+        "pos": self.pos,
+        "observacoes": self.observacoes,
+        # # --------------------------------Valores lidos no arquivo de solucao---------------------
+        "turmasALecionar": [t.codigo for t in self.turmas_a_lecionar],
+        "cargaHoraria": self.carga_horaria,
+    }
+
     # ----------------------------------------------------------------------------------------------------
-    def serialize(self):
+    def serializeDetailed(self):
         return {
             "nomeCompleto": self.nome_completo,
             "matricula": self.matricula,

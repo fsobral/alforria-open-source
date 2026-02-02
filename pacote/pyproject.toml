@@ -1,6 +1,6 @@
 [project]
 name = "alforria"
-version = "0.3.0"
+version = "0.3.2"
 description = "Teacher Scheduler"
 authors = [
     {name = "Your Name",email = "you@example.com"}
@@ -17,4 +17,4 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-alforria = "alforria.cli:app"
+alforria = "alforria.__init__:mainfunc"
