@@ -8,6 +8,10 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "prompt_toolkit",
+    "unidecode",
+    "pandas",
+    "numpy"
 ]
 # precisa adicionar as dependencies, tive que add manualmente
 # unidecode, promptoolkit? (acho q da pra tirar esse)
