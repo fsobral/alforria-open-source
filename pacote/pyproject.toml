@@ -13,8 +13,6 @@ dependencies = [
     "pandas",
     "numpy"
 ]
-# precisa adicionar as dependencies, tive que add manualmente
-# unidecode, promptoolkit? (acho q da pra tirar esse)
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -22,3 +20,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 alforria = "alforria.__init__:mainfunc"
+verifica_dados = "alforria.scripts.verifica_dados:verifica"
