@@ -21,3 +21,5 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 alforria = "alforria.__init__:mainfunc"
 verifica_dados = "alforria.scripts.verifica_dados:verifica"
+antes = "alforria.scripts.antes:antes"
+depois = "alforria.scripts.depois:depois"
