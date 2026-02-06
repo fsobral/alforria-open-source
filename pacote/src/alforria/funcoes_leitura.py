@@ -8,6 +8,9 @@ import pandas as pd
 
 from . import classes, funcoes_gerais
 
+import logging
+
+logger = logging.getLogger('alforria')
 
 def sar292_to_df(sarfile):
     rx = re.compile(
@@ -97,7 +100,7 @@ def ler_solucao_gurobi_jump(professores, turmas, arquivo):
             if not "[" in linha:
                 continue
 
-            a = re.split("[\[\]]", linha)
+            a = re.split(r"[\[\]]", linha)
 
             b = a[1].split(",")
             professor = b[0]
@@ -161,7 +164,7 @@ def ler_solucao(professores, turmas, arquivo):
             if not "(" in linha:
                 continue
 
-            a = re.split("[\[\]]", linha)
+            a = re.split(r"[\[\]]", linha)
 
             b = a[1].split(",")
             professor = b[0]
@@ -378,7 +381,7 @@ def _csv_to_dataframe(sarfile):
         sarfile,
         header=None,
         parse_dates=[15, 16],
-        delimiter="\s*,\s*",
+        delimiter=r"\s*,\s*",
         engine="python",
         comment="#",
     )
@@ -658,12 +661,13 @@ def ler_pref(form, grupos, max_impedimentos):
             next(tokens)  # Pula timestamp
             next(tokens)  # Pula email duplicado
             p.nome_completo = funcoes_gerais.uniformize(next(tokens))  # Identificacao
+            logger.debug("\tReading teacher %s", p.nome_completo)
             p.matricula = int(next(tokens))  # Identificacao Unica
             # Jeito tosco de remover duplicatas
             # TODO: melhorar isso
             for i in professores:
                 if i.matricula == p.matricula:
-                    print(
+                    logger.info(
                         "AVISO: Professores "
                         + i.nome()
                         + " e "
@@ -681,7 +685,7 @@ def ler_pref(form, grupos, max_impedimentos):
                 chp2 = "0"
             p.chprevia1 = int(chp1)
             p.chprevia2 = int(chp2)
-            p.discriminacao_chprevia = next(tokens)
+            p.discriminacao_chprevia = funcoes_gerais.uniformize(next(tokens))
             w = funcoes_gerais.uniformize(next(tokens))  # Licença
             if "PRIMEIRO" in w:
                 p.licenca1 = True
@@ -703,13 +707,13 @@ def ler_pref(form, grupos, max_impedimentos):
                 or "OUTRO" in p.programa_pos
             )
             # Pesos das disciplinas
-            p.peso_disciplinas_bruto = float(next(tokens))
-            p.peso_horario_bruto = float(next(tokens))
-            p.peso_cargahor = float(next(tokens))
-            p.peso_distintas = float(next(tokens))
-            p.peso_numdisc = float(next(tokens))
-            p.peso_manha_noite = float(next(tokens))
-            p.peso_janelas_bruto = float(next(tokens))
+            p.peso_disciplinas_bruto = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_horario_bruto =     funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_cargahor =          funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_distintas =         funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_numdisc =           funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_manha_noite =       funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_janelas_bruto =     funcoes_gerais.convert_numeric_field(float, next(tokens))
             # Inaptidao em grupos
             w = funcoes_gerais.uniformize(next(tokens))
             if len(w) > 0:
@@ -800,7 +804,7 @@ def ler_pref(form, grupos, max_impedimentos):
                         p.pref_horarios_bruto[h, d + 1] = converter_preferencia[pref]
             # Tudo o que vier depois daqui eh considerado comentario.
             for obs in tokens:
-                p.observacoes += obs
+                p.observacoes += funcoes_gerais.uniformize(obs)
 
             professores.append(p)
     return professores

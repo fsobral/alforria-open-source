@@ -34,11 +34,9 @@ args = parser.parse_args()
 
 # Configura nivel de saida
 
-logger = logging.getLogger('alforria')
-
-logger.addHandler(logging.StreamHandler())
-
 def verifica():
+
+    logger = logging.getLogger('alforria')
 
     if args.v is None or args.v == 0:
 

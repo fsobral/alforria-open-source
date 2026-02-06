@@ -6,6 +6,13 @@ import unidecode
 
 from . import classes
 
+def convert_numeric_field(convert_func, value):
+    """
+    Converts string `value` to a numeric one or returns 0 if it is blank.
+    """
+
+    return convert_func(value) if not value.isspace() and value != '' else 0
+
 #############################################################################################################
 ##############################           funcao        get_paths         ####################################
 #############################################################################################################
