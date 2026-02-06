@@ -17,8 +17,19 @@ mexa nas variaveis abaixo
 from .. import funcoes_leitura, funcoes_escrita, check
 
 import logging
+import argparse
 
 from datetime import date
+
+# Carrega os argumentos
+
+parser = argparse.ArgumentParser(
+    description='Script para ser rodado antes da otimização.')
+parser.add_argument('tipo', help='Tipo de modelo a ser gerado: MathProg (.mod) ou JuMP (.jl)',
+                    choices=['mod', 'jl'])
+
+args = parser.parse_args()
+
 
 def antes():
 
@@ -77,7 +88,13 @@ def antes():
     check.checkdata(professores,turmas,pre_atribuidas,S1INI,S2INI,FANTPATH)
 
     # Gera o arquivo .DAT, necessario para o modelo de otimizacao
-    funcoes_escrita.escreve_dat(professores,turmas,grupos,pre_atribuidas,DATPATH)
+    if args.tipo == 'mod':
+
+        funcoes_escrita.escreve_dat(professores,turmas,grupos,pre_atribuidas,DATPATH + '.dat')
+
+    elif args.tipo == 'jl':
+
+        funcoes_escrita.escreve_jl(professores,turmas,grupos,pre_atribuidas,DATPATH + '.jl')
 
     # Estatisticas finais
     check.estatisticas(professores,turmas)

@@ -7,8 +7,17 @@ import alforria.funcoes_escrita as escrita
 from .. import check
 
 import logging
+import argparse
 
 from datetime import date
+
+parser = argparse.ArgumentParser(
+    description='Script para ser rodado depois da otimização.')
+parser.add_argument('tipo', help='Tipo de modelo a ser gerado: MathProg (.mod) ou JuMP (.jl)',
+                    choices=['mod', 'jl'])
+
+args = parser.parse_args()
+
 
 def depois():
 

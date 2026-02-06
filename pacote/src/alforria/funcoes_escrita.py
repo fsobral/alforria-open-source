@@ -547,6 +547,71 @@ def atualiza_dat2(professores, arquivo):
     professores.sort(key=lambda x: x.nome())
 
 
+def atualiza_jl(professores, arquivo):
+    """
+    Esta funcao serve para remover professores muito insatisfeitos e preparar para
+    uma nova rodada.
+    """
+
+    listap = []
+
+    # Leitura dos professores ja excluidos
+
+    # Assume that this file is
+    # P_OUT :: Set{String} = Set([ "T1", "T2", ..., "TN"])
+
+    with open(arquivo, "r") as f:
+        l = f.readline().split(',')
+
+        nomes = [re.match(r'"([^"]+)"', r)[1] for r in re.findall(r'"[^"]+"', s)]
+
+        logger.debug("atualiza_jl: found %d names", len(nomes))
+
+        for nome in nomes:
+            for p in professores:
+                if p.nome() == nome:
+                    listap.append(p)
+                    break
+
+    professores.sort(key=lambda x: x.insatisfacao, reverse=True)
+
+    # Procura o proximo insatisfeito que nao foi excluido
+
+    i = 0
+    while (i < len(professores)) and (professores[i] in listap):
+        i = i + 1
+
+    maxinsat = -100
+    if i < len(professores):
+        maxinsat = professores[i].insatisfacao
+        listap.append(professores[i])
+
+    # Gera o novo arquivo
+
+    logger.info("Professores retirados da funcao objetivo:")
+    for p in listap:
+        logger.info("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
+
+    with open(arquivo, "w") as f:
+        f.write("P_OUT :: Set{String}([")
+
+        for p in listap[0:-1]:
+            f.write(p.nome() + ", ")
+
+        f.write(listap[-1] + "])\n\n")
+
+        f.write("ub_insat :: Dict{String, Float64} = Dict(\n")
+
+        for p in listap[0:-1]:
+            f.write("\t" + p.nome() + " => " + str(max(maxinsat, p.insatisfacao)) + ",\n")
+
+        p = listap[-1]
+        f.write("\t" + p.nome() + " => " + str(max(maxinsat, p.insatisfacao)) + "\n")
+        f.write(")")
+
+    # Antes de sair, ordena os professores por nome
+    professores.sort(key=lambda x: x.nome())
+
 ####################################################################################################################
 ####################                  Funcao              escreve jl                       #########################
 ####################################################################################################################
