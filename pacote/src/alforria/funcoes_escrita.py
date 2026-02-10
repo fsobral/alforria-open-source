@@ -1,10 +1,13 @@
 import datetime
 import os
+import logging
+import re
 
 import pandas as pd
 
 from . import funcoes_leitura as leitura
 
+logger = logging.getLogger('alforria')
 
 def gera_declaracao_ch_semestre(
     listah, s, dirh="/home/fsobral/GoogleDrive/Alforria/2024/horarios"
@@ -504,14 +507,20 @@ def atualiza_dat2(professores, arquivo):
 
     # Leitura dos professores ja excluidos
 
-    with open(arquivo, "r") as f:
-        l = f.readline().split()
+    try:
 
-        if len(l) > 3:
-            for nome in l[3:]:
-                for p in professores:
-                    if p.nome() == nome:
-                        listap.append(p)
+        with open(arquivo, "r") as f:
+            l = f.readline().split()
+
+            if len(l) > 3:
+                for nome in l[3:]:
+                    for p in professores:
+                        if p.nome() == nome:
+                            listap.append(p)
+
+    except FileNotFoundError:
+
+        logger.debug("\tatualiza_jl: file not found.")
 
     professores.sort(key=lambda x: x.insatisfacao, reverse=True)
 
@@ -528,9 +537,9 @@ def atualiza_dat2(professores, arquivo):
 
     # Gera o novo arquivo
 
-    print("Professores retirados da funcao objetivo:")
+    logger.info("Professores retirados da funcao objetivo:")
     for p in listap:
-        print("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
+        logger.info("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
 
     with open(arquivo, "w") as f:
         f.write("set P_OUT :=")
@@ -557,21 +566,28 @@ def atualiza_jl(professores, arquivo):
 
     # Leitura dos professores ja excluidos
 
-    # Assume that this file is
+    # Assume that this file is a single line
     # P_OUT :: Set{String} = Set([ "T1", "T2", ..., "TN"])
 
-    with open(arquivo, "r") as f:
-        l = f.readline().split(',')
+    try:
 
-        nomes = [re.match(r'"([^"]+)"', r)[1] for r in re.findall(r'"[^"]+"', s)]
+        with open(arquivo, "r") as f:
+            l = f.readline()
 
-        logger.debug("atualiza_jl: found %d names", len(nomes))
+            nomes = [re.match(r'"([^"]+)"', r)[1] for r in re.findall(r'"[^"]+"', l)]
 
-        for nome in nomes:
-            for p in professores:
-                if p.nome() == nome:
-                    listap.append(p)
-                    break
+            logger.debug("\tatualiza_jl: found %d names", len(nomes))
+
+            for nome in nomes:
+                for p in professores:
+                    if p.nome() == nome:
+                        listap.append(p)
+                        break
+    
+    except FileNotFoundError:
+
+        logger.debug("\tatualiza_jl: file not found.")
+
 
     professores.sort(key=lambda x: x.insatisfacao, reverse=True)
 
@@ -588,7 +604,7 @@ def atualiza_jl(professores, arquivo):
 
     # Gera o novo arquivo
 
-    logger.info("Professores retirados da funcao objetivo:")
+    logger.info("\tProfessores retirados da funcao objetivo:")
     for p in listap:
         logger.info("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
 
@@ -596,18 +612,22 @@ def atualiza_jl(professores, arquivo):
         f.write("P_OUT :: Set{String}([")
 
         for p in listap[0:-1]:
-            f.write(p.nome() + ", ")
+            f.write('"{0:s}", '.format(p.nome()))
 
-        f.write(listap[-1] + "])\n\n")
+        f.write('"{0:s}"])\n\n'.format(listap[-1].nome()))
 
         f.write("ub_insat :: Dict{String, Float64} = Dict(\n")
 
         for p in listap[0:-1]:
-            f.write("\t" + p.nome() + " => " + str(max(maxinsat, p.insatisfacao)) + ",\n")
 
-        p = listap[-1]
-        f.write("\t" + p.nome() + " => " + str(max(maxinsat, p.insatisfacao)) + "\n")
-        f.write(")")
+            f.write('\t"{0:s} => {1:3.5f},\n'.format(p.nome(), max(maxinsat, p.insatisfacao)))
+
+        else:
+
+            p = listap[-1]
+            f.write('\t"{0:s} => {1:3.5f}\n'.format(p.nome(), max(maxinsat, p.insatisfacao)))
+
+        f.write(")\n")
 
     # Antes de sair, ordena os professores por nome
     professores.sort(key=lambda x: x.nome())

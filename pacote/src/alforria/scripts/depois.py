@@ -21,6 +21,10 @@ args = parser.parse_args()
 
 def depois():
 
+    logger = logging.getLogger('alforria')
+
+    logger.setLevel(logging.ERROR)
+    
     paths = leitura.ler_conf('../config/paths.cnf')
 
     GRUPOSPATH = paths['GRUPOSPATH']
@@ -56,7 +60,13 @@ def depois():
 
     professores.extend(p_fantasmas)
 
-    escrita.atualiza_dat2(professores,DAT2PATH)    
+    if args.tipo == 'mod':
+
+        escrita.atualiza_dat2(professores,DAT2PATH + '.dat')
+
+    elif args.tipo == 'jl':
+
+        escrita.atualiza_jl(professores,DAT2PATH + '.jl')
 
     check.estatisticas(professores,turmas)
 
