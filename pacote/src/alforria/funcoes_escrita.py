@@ -765,16 +765,16 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.seek(f.tell() - 2, 0)
         f.write("\n])\n\n")
 
-        f.write("pref_grupo :: Dict{Tuple{String, String}, Float16} =\n")
-        f.write("Dict{Tuple{String, String}, Float16}(\n")
+        f.write("pref_grupo :: Dict{Tuple{String, String}, Float64} =\n")
+        f.write("Dict{Tuple{String, String}, Float64}(\n")
         for p in professores:
             for g in p.pref_grupos.keys():
                 f.write(f'\t("{p.id()}", "{g}") => {p.pref_grupos[g]},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("pref_hor :: Dict{Tuple{String, Int64, Int64}, Float16} =\n")
-        f.write("Dict{Tuple{String, Int64, Int64}, Float16}(\n")
+        f.write("pref_hor :: Dict{Tuple{String, Int64, Int64}, Float64} =\n")
+        f.write("Dict{Tuple{String, Int64, Int64}, Float64}(\n")
         for p in professores:
             for d in range(2, 8):
                 for h in range(1, 17):
@@ -812,43 +812,43 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.seek(f.tell() - 1, 0)
         f.write("\n])\n\n")
 
-        f.write("peso_disciplinas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_disciplinas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_disciplinas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_horario  :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_horario  :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_horario},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_cargahor :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_cargahor :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_cargahor},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_distintas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_distintas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_distintas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_janelas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_janelas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_janelas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_numdisc :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_numdisc :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_numdisc},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_manha_noite :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_manha_noite :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_manha_noite},\n')
         f.seek(f.tell() - 2, 0)

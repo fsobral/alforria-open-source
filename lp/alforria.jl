@@ -82,13 +82,13 @@ function alforria(;
     
     licenca :: Set{Tuple{String, Int64}} = Set{Tuple{String, Int64}}(),
     
-    peso_disciplinas :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_numdisc     :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_cargahor    :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_horario     :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_distintas   :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_manha_noite :: Dict{String, Int64} = Dict{String, Int64}(),
-    peso_janelas     :: Dict{String, Int64} = Dict{String, Int64}(),
+    peso_disciplinas :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_numdisc     :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_cargahor    :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_horario     :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_distintas   :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_manha_noite :: Dict{String, Float64} = Dict{String, Float64}(),
+    peso_janelas     :: Dict{String, Float64} = Dict{String, Float64}(),
 
     # O professor P é inapto a lecionar para o grupo G
     inapto :: Set{Tuple{String, String}} = Set{Tuple{String, String}}(),
@@ -161,42 +161,42 @@ function alforria(;
 
 ##########################	PARÂMETROS   DE    FORMULÁRIO	   ##########################
 
-    chprevia1_in = Dict(p => 0 for p in P)
+    chprevia1_in = Dict(p => 0.0 for p in P)
     for (p, i) in chprevia1
         chprevia1_in[p] = i
     end
     
-    chprevia2_in = Dict(p => 0 for p in P)
+    chprevia2_in = Dict(p => 0.0 for p in P)
     for (p, i) in chprevia2
         chprevia2_in[p] = i
     end
 
-    peso_disciplinas_in = Dict(p => 0 for p in P)
+    peso_disciplinas_in = Dict(p => 0.0 for p in P)
     for (p, i) in peso_disciplinas
         peso_disciplinas[p] = i
         end
 
-    peso_numdisc_in     = Dict(p => 5 for p in P)
+    peso_numdisc_in     = Dict(p => 5.0 for p in P)
     for (p, i) in peso_numdisc
         peso_numdisc_in[p] = i
         end
-    peso_cargahor_in    = Dict(p => 5 for p in P)
+    peso_cargahor_in    = Dict(p => 5.0 for p in P)
     for (p, i) in peso_cargahor
         peso_cargahor_in[p] = i
         end
-    peso_horario_in     = Dict(p => 5 for p in P)
+    peso_horario_in     = Dict(p => 5.0 for p in P)
     for (p, i) in peso_horario
         peso_horario_in[p] = i
         end
-    peso_distintas_in   = Dict(p => 5 for p in P)
+    peso_distintas_in   = Dict(p => 5.0 for p in P)
     for (p, i) in peso_distintas
         peso_distintas_in[p] = i
         end
-    peso_manha_noite_in = Dict(p => 5 for p in P)
+    peso_manha_noite_in = Dict(p => 5.0 for p in P)
     for (p, i) in peso_manha_noite
         peso_manha_noite_in[p] = i
         end
-    peso_janelas_in     = Dict(p => 5 for p in P)
+    peso_janelas_in     = Dict(p => 5.0 for p in P)
     for (p, i) in peso_janelas
         peso_janelas_in[p] = i
         end
@@ -211,12 +211,12 @@ function alforria(;
         end
     end
 
-    pref_grupo_in = Dict((p, g) => 0 for p in P, g in G)
+    pref_grupo_in = Dict((p, g) => 0.0 for p in P, g in G)
     for ((p, g), i) in pref_grupo
         pref_grupo_in[(p, g)] = i
     end
     
-    pref_hor_in = Dict((p, d, h) => 5 for p in P, d in D, h in H)
+    pref_hor_in = Dict((p, d, h) => 5.0 for p in P, d in D, h in H)
     for ((p, d, h), i) in pref_hor
         pref_hor_in[(p, d, h)] = i
     end
@@ -588,6 +588,18 @@ return alforria_mod, x
 
 end
 
-# mod, x = alforria(T=T, P=P, c=c)
+# mod, x = alforria(T=T, P=P, T_PRE=T_PRE,
+#                   chmax_efetivo_anual=chmax_efetivo_anual, chmax_efetivo_semestral=chmax_efetivo_semestral,
+#                   chmax_temporario_anual=chmax_temporario_anual, chmax_temporario_semestral=chmax_temporario_semestral,
+#                   chmin_efetivo_anual=chmin_efetivo_anual, chmin_temporario_anual=chmin_temporario_anual, chmin_graduacao=chmin_graduacao,
+#                   pre_atribuida=pre_atribuida,
+#                   c=c, ch=ch, ch1=ch1, ch2=ch2, vinculadas=vinculadas, turma_grupo,
+#                   temporario=temporario, chprevia1=chprevia1, chprevia2=chprevia2, licenca=licenca,
+#                   peso_disciplinas=peso_disciplinas, peso_numdisc=peso_numdisc, peso_cargahor=peso_cargahor,
+#                   peso_horario=peso_horario, peso_distintas=peso_distintas, peso_manha_noite=peso_manha_noite, peso_janelas=peso_janelas,
+#                   inapto=inapto,
+#                   pref_grupo=pref_grupo, pref_hor=pref_hor, pref_janelas=pref_janelas, impedimento=impedimento,
+#                   chmax=chmax, chmax1=chmax1, chmax2=chmax2
+#                   )
 
 # optimize!(mod)
