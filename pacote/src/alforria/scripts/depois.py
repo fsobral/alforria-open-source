@@ -15,6 +15,8 @@ parser = argparse.ArgumentParser(
     description='Script para ser rodado depois da otimização.')
 parser.add_argument('tipo', help='Tipo de modelo a ser gerado: MathProg (.mod) ou JuMP (.jl)',
                     choices=['mod', 'jl'])
+parser.add_argument('-v', help='Nivel de saida desejado. Quanto mais v\'s ' +
+                    'maior a quantidade de informacao.', action='count')
 
 args = parser.parse_args()
 
@@ -23,8 +25,22 @@ def depois():
 
     logger = logging.getLogger('alforria')
 
-    logger.setLevel(logging.ERROR)
-    
+    if args.v is None or args.v == 0:
+
+        logger.setLevel(logging.ERROR)
+
+    elif args.v == 1:
+
+        logger.setLevel(logging.WARN)
+
+    elif args.v == 2:
+
+        logger.setLevel(logging.INFO)
+
+    else:
+
+        logger.setLevel(logging.DEBUG)
+
     paths = leitura.ler_conf('../config/paths.cnf')
 
     GRUPOSPATH = paths['GRUPOSPATH']
