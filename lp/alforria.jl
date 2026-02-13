@@ -116,17 +116,38 @@ function alforria(;
     # Carga horaria minima anual (horas/semana)
     chmin :: Dict{String, Int64} = Dict{String, Int64}(),
 
-    #
+    # Optimizer options
+    # Tempo em segundos
+    cputime :: Float64 = 7200.0,
+    # Gap relativo
+    mipgap :: Float64 = 0.6,
+    # Arquivo com a solucao
+    solfile :: String = "alforria.sol",
+    # 0 usa todos, >0 o numero dado
+    threads :: Int64 = 0,
+
+    # Tipo de funcao objetivo
     fobj :: Symbol = :fobj2
     )
 
 ################! Corpo da função
+
     # alforria_mod = Model(HiGHS.Optimizer)
+
+    # set_attribute(alforria_mod, "parallel", "on")
+    # set_attribute(alforria_mod, "presolve", "on")
+    # set_attribute(alforria_mod, "mip_rel_gap", 0.6)
+    # set_attribute(alforria_mod, "time_limit", 7200.0)
+    # set_attribute(alforria_mod, "solution_file", "alforria.sol")
+    # set_attribute(alforria_mod, "write_solution_to_file", true)
+    # set_attribute(alforria_mod, "mip_heuristic_effort", 1.0)
+
     alforria_mod = Model(Gurobi.Optimizer)
 
-    set_attribute(alforria_mod, "TimeLimit", 7200)
-    set_attribute(alforria_mod, "MIPGap", 0.5)
-    set_attribute(alforria_mod, "ResultFile", "alforria.sol")
+    set_attribute(alforria_mod, "TimeLimit", cputime)
+    set_attribute(alforria_mod, "MIPGap", mipgap)
+    set_attribute(alforria_mod, "ResultFile", solfile)
+    set_attribute(alforria_mod, "Threads", threads)
 
 ###########################   PARÂMETROS      CONVENCIONADOS    ##########################
     # false: efetivo -- true: temporario
