@@ -161,6 +161,13 @@ function alforria(;
 
 ##########################	PARÂMETROS   DE    FORMULÁRIO	   ##########################
 
+    # Atualiza os grupos fornecidos pelo usuario
+    turma_grupo_in = Dict{String, String}( t => "__NOGROUP__" for t in T)
+    push!(turma_grupo_in, turma_grupo...)
+
+    G_in = Set{String}("__NOGROUP__")
+    push!(G_in, G...)
+
     chprevia1_in = Dict(p => 0.0 for p in P)
     for (p, i) in chprevia1
         chprevia1_in[p] = i
@@ -205,13 +212,13 @@ function alforria(;
 
     prop =  Dict(p => (0.5*(2 - ((p, 1) in licenca) - ((p,2) in licenca))) for p in P)
 
-    for p in P, g in G
-        if ((p, g) in inapto && (sum((p, t) in pre_atribuida for t in T if turma_grupo[t] == g) >= 1))
+    for p in P, g in G_in
+        if ((p, g) in inapto && (sum((p, t) in pre_atribuida for t in T if (turma_grupo_in[t] == g), init = 0) >= 1))
             delete!(inapto, (p, g))
         end
     end
 
-    pref_grupo_in = Dict((p, g) => 0.0 for p in P, g in G)
+    pref_grupo_in = Dict((p, g) => 0.0 for p in P, g in G_in)
     for ((p, g), i) in pref_grupo
         pref_grupo_in[(p, g)] = i
     end
@@ -260,7 +267,7 @@ function alforria(;
     # Parametro de preferencia de um professor por uma turma (depende dos parametros pre_atribuida, pref_grupo, e turma-grupo) 
     #!! A intuição de pref_turma é que ela dá um valor para a preferência do professor p para a turma t, com base na preferência do seu respectivo grupo.
     # TODO Pensar em como melhorar isso, pois não faz sentido descontar a preferência quando a turma é pre-atribuída
-    pref_turma = Dict((p, t) => ((t ∉ keys(turma_grupo)) || (p, turma_grupo[t]) in inapto) ? 0 : pref_grupo_in[p, turma_grupo[t]] for p in P, t in T)
+    pref_turma = Dict((p, t) => ((t ∉ keys(turma_grupo_in)) || (p, turma_grupo_in[t]) in inapto) ? 0 : pref_grupo_in[p, turma_grupo_in[t]] for p in P, t in T)
 
     # Indica se o horário h pertence ao turno u 
     # ! Temos que verificar se u=3 deveria ser com h >= 11 ou h>=14!
@@ -327,7 +334,7 @@ function alforria(;
 
     @variables(alforria_mod, 
     begin
-    lec_grp[P, G, S], Bin               # 1 se o professor P leciona displina do grupo G no semestre S
+    lec_grp[P, G_in, S], Bin               # 1 se o professor P leciona displina do grupo G no semestre S
     lec_trn[P, S, D, TURNOS], Bin    # Indica se P leciona no semestre S, dia D, turno TURNOS
     trn_cheio[P, S, D, TURNOS], Bin  # O respectivo turno é cheio 
     end)
@@ -388,10 +395,10 @@ function alforria(;
 ############################       DEFINIÇÃO DE VARIÁVEIS AUXILIARES        ###########################
     @constraint(alforria_mod, def_lec_grp_inapto[(p, g) in inapto, s in S], lec_grp[p, g, s] == 0)
 
-    inapto0 = [(p, g) for p in P, g in G if !((p, g) in inapto)]
+    inapto0 = [(p, g) for p in P, g in G_in if !((p, g) in inapto)]
     @constraint(alforria_mod, def_lec_grp_up[(p, g) in inapto0, s in S],
-                lec_grp[p, g, s] <= sum((g == turma_grupo[t])*x[p,t] for t in T if (t, s) in semestralidade))
-    down = [(p, g, t, s) for (p, g) in inapto0, (t, s) in semestralidade if  (g == turma_grupo[t])]
+                lec_grp[p, g, s] <= sum((g == turma_grupo_in[t])*x[p,t] for t in T if (t, s) in semestralidade))
+    down = [(p, g, t, s) for (p, g) in inapto0, (t, s) in semestralidade if  (g == turma_grupo_in[t])]
     @constraint(alforria_mod, def_lec_grp_down[(p, g, t, s) in down],
                 lec_grp[p,g,s] >= x[p,t])
     
@@ -452,7 +459,7 @@ function alforria(;
     sum(((t,s,d,h) in c) * x[p,t] for t in T) <= 1)
 
     # Professores inaptos nao ministram as respectivas disciplinas
-    restt2 = [(p, t) for p in P, t in T if (t ∈ keys(turma_grupo)) && ((p, turma_grupo[t]) in inapto)]
+    restt2 = [(p, t) for p in P, t in T if (t ∈ keys(turma_grupo_in)) && ((p, turma_grupo_in[t]) in inapto)]
     @constraint(alforria_mod, rest2[(p, t) in restt2], x[p,t] == 0)
 
     # Cada turma tem, no maximo, um professor #
@@ -497,7 +504,7 @@ function alforria(;
     @constraint(alforria_mod, rest11[p in temporario], sum(x[p,t] for t in T) <= numdiscmax_temporario)
     
     # Maximo de numero de grupos para temporarios
-    @constraint(alforria_mod, rest12[p in temporario, s in S], sum(lec_grp[p,g,s] for g in G) <= 2)
+    @constraint(alforria_mod, rest12[p in temporario, s in S], sum(lec_grp[p,g,s] for g in G_in) <= 2)
     
 
 
@@ -544,7 +551,7 @@ function alforria(;
     ajuste_hor[p] * (1 / chesp[p]) * sum(((t,s,d,h) in c)*pref_hor_in[p,d,h]*x[p,t] for t in T, s in S, d in D, h in H))
     
     @constraint(alforria_mod, def_insat_distintas[p in P], insat_distintas[p] ==
-    customarginal_distintas[p in temporario] * ((sum(lec_grp[p,g,s] for g in G, s in S) + (chprevia_tt[p]/6))-2*paraiso_distintas[p in temporario]))
+    customarginal_distintas[p in temporario] * ((sum(lec_grp[p,g,s] for g in G_in, s in S) + (chprevia_tt[p]/6))-2*paraiso_distintas[p in temporario]))
 
     @constraint(alforria_mod, def_insat_manha_noite[p in P], insat_manha_noite[p] == 5*(mnh_nt[p,1]+mnh_nt[p,2]))
 
@@ -588,7 +595,7 @@ return alforria_mod, x
 
 end
 
-# mod, x = alforria(T=T, P=P, T_PRE=T_PRE,
+# mod, x = alforria(T=T, P=P, G=G, T_PRE=T_PRE,
 #                   chmax_efetivo_anual=chmax_efetivo_anual, chmax_efetivo_semestral=chmax_efetivo_semestral,
 #                   chmax_temporario_anual=chmax_temporario_anual, chmax_temporario_semestral=chmax_temporario_semestral,
 #                   chmin_efetivo_anual=chmin_efetivo_anual, chmin_temporario_anual=chmin_temporario_anual, chmin_graduacao=chmin_graduacao,
