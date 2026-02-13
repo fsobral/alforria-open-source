@@ -219,6 +219,68 @@ def ler_solucao(professores, turmas, arquivo):
                         p.insat_janelas = float(linha.split()[-1])
 
 
+def ler_solucao_jl(professores, turmas, arquivo):
+    with open(arquivo, "r") as fonte:
+        for linha in fonte:
+            # Pula as linhas que nao setam variaveis
+            if not "[" in linha:
+                continue
+
+            a = re.split(r"[\[\]]", linha)
+
+            b = a[1].split(",")
+            professor = b[0]
+            variavel = a[0]
+
+            if variavel == "carga_horaria":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.carga_horaria = float(a[-1])
+            elif variavel == "x":
+                turmaid = b[1]
+                if float(a[-1]) > 0.9:
+                    for t in turmas:
+                        if t.id() == turmaid:
+                            break
+                    for p in professores:
+                        if p.nome() == professor:
+                            p.add_course(t)
+                            t.add_professor(p)
+                            break
+            elif variavel == "insat":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insatisfacao = float(a[-1])
+            elif variavel == "insat_disciplinas":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_disciplinas = float(a[-1])
+            elif variavel == "insat_cargahor":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_cargahor = float(a[-1])
+            elif variavel == "insat_numdisc":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_numdisc = float(a[-1])
+            elif variavel == "insat_horario":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_horario = float(a[-1])
+            elif variavel == "insat_distintas":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_distintas = float(a[-1])
+            elif variavel == "insat_manha_noite":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_manha_noite = float(a[-1])
+            elif variavel == "insat_janelas":
+                for p in professores:
+                    if p.nome() == professor:
+                        p.insat_janelas = float(a[-1])
+
+
 ####################################################################################################################
 ####################    Funcao                 ler_solucao_cbc          e auxiliares      #########################
 ####################################################################################################################

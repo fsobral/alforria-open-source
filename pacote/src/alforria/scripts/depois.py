@@ -52,7 +52,13 @@ def depois():
 
     turmas = leitura.caca_fantasmas(FANTPATH,turmas)
 
-    leitura.ler_solucao(professores,turmas,SOLPATH)
+    if args.tipo == 'mod':
+
+        leitura.ler_solucao(professores,turmas,SOLPATH)
+
+    elif args.tipo == 'jl':
+
+        leitura.ler_solucao_jl(professores, turmas, SOLPATH)
 
     pre_atribuidas = leitura.ler_pre_atribuidas(ATRIBPATH,FANTPATH,professores,turmas)
 

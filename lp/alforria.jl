@@ -1,7 +1,6 @@
 using JuMP, HiGHS
 using Gurobi
 
-
 """
     _cria_ch_s(P, chmaxs, S, licenca, temporario, chmax_temporario_semestral, chmax_efetivo_semestral)
 
@@ -115,12 +114,19 @@ function alforria(;
     chmax2 :: Dict{String, Int64} = Dict{String, Int64}(),
 
     # Carga horaria minima anual (horas/semana)
-    chmin :: Dict{String, Int64} = Dict{String, Int64}()
+    chmin :: Dict{String, Int64} = Dict{String, Int64}(),
+
+    #
+    fobj :: Symbol = :fobj2
     )
 
 ################! Corpo da função
     # alforria_mod = Model(HiGHS.Optimizer)
     alforria_mod = Model(Gurobi.Optimizer)
+
+    set_attribute(alforria_mod, "TimeLimit", 7200)
+    set_attribute(alforria_mod, "MIPGap", 0.5)
+    set_attribute(alforria_mod, "ResultFile", "alforria.sol")
 
 ###########################   PARÂMETROS      CONVENCIONADOS    ##########################
     # false: efetivo -- true: temporario
@@ -165,7 +171,7 @@ function alforria(;
     turma_grupo_in = Dict{String, String}( t => "__NOGROUP__" for t in T)
     push!(turma_grupo_in, turma_grupo...)
 
-    G_in = Set{String}("__NOGROUP__")
+    G_in = Set{String}(["__NOGROUP__"])
     push!(G_in, G...)
 
     chprevia1_in = Dict(p => 0.0 for p in P)
@@ -590,6 +596,25 @@ function alforria(;
 
 ############################## COLOCAR A FUNCAO OBJETIVO DESEJADA AQUI #########################
 
+    if fobj == :fobj1
+
+        @objective(alforria_mod, Min,
+        	max_das_insat +
+        	1000000 * gap_ch_graduacao + 
+            10000   * gap_horario_max +
+            100     * gap_ch_tt
+        )
+
+    elseif fobj == :fobj2
+
+        @objective(alforria_mod, Min,
+           (1 / length(P)) * sum(insat[p] for p in setdiff(P, P_OUT), init = 0) +
+        	1000000 * gap_ch_graduacao + 
+            10000   * gap_horario_max +
+            100     * gap_ch_tt
+        )
+
+    end
 
 return alforria_mod, x
 
