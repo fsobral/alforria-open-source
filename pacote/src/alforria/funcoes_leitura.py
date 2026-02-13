@@ -220,6 +220,13 @@ def ler_solucao(professores, turmas, arquivo):
 
 
 def ler_solucao_jl(professores, turmas, arquivo):
+    """Le a solucao escrita em `arquivo` quando gerada pelo Gurobi (.sol) com o modelo via JuMP. Atribui a solucao obtida aos `professores` e `turmas`.
+
+    Args:
+        professores (list): lista de professores
+        turmas (list): lista de turmas
+        arquivo (str): arquivo com a solucao (extensao .sol)
+    """
     with open(arquivo, "r") as fonte:
         for linha in fonte:
             # Pula as linhas que nao setam variaveis
@@ -232,53 +239,57 @@ def ler_solucao_jl(professores, turmas, arquivo):
             professor = b[0]
             variavel = a[0]
 
+            idx_p = {p.nome() : p for p in professores}
+            idx_t = {t.id() : t for t in turmas}
+
+            p = idx_p[professor]
+
             if variavel == "carga_horaria":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.carga_horaria = float(a[-1])
+
+                p.carga_horaria = float(a[-1])
+
             elif variavel == "x":
+
                 turmaid = b[1]
+
                 if float(a[-1]) > 0.9:
-                    for t in turmas:
-                        if t.id() == turmaid:
-                            break
-                    for p in professores:
-                        if p.nome() == professor:
-                            p.add_course(t)
-                            t.add_professor(p)
-                            break
+
+                    t = idx_t[turmaid]
+
+                    p.add_course(t)
+                    t.add_professor(p)
+
             elif variavel == "insat":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insatisfacao = float(a[-1])
+
+                p.insatisfacao = float(a[-1])
+
             elif variavel == "insat_disciplinas":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_disciplinas = float(a[-1])
+
+                p.insat_disciplinas = float(a[-1])
+
             elif variavel == "insat_cargahor":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_cargahor = float(a[-1])
+
+                p.insat_cargahor = float(a[-1])
+
             elif variavel == "insat_numdisc":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_numdisc = float(a[-1])
+
+                p.insat_numdisc = float(a[-1])
+
             elif variavel == "insat_horario":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_horario = float(a[-1])
+
+                p.insat_horario = float(a[-1])
+
             elif variavel == "insat_distintas":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_distintas = float(a[-1])
+
+                p.insat_distintas = float(a[-1])
+
             elif variavel == "insat_manha_noite":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_manha_noite = float(a[-1])
+
+                p.insat_manha_noite = float(a[-1])
+
             elif variavel == "insat_janelas":
-                for p in professores:
-                    if p.nome() == professor:
-                        p.insat_janelas = float(a[-1])
+
+                p.insat_janelas = float(a[-1])
 
 
 ####################################################################################################################
