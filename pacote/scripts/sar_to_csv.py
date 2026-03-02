@@ -9,8 +9,8 @@ Este script simplesmente le o SAR23 original e o converte em um arquivo muito ma
 
 import argparse
 
-import funcoes_leitura as leitura
-import funcoes_escrita as escrita
+import alforria.funcoes_leitura as leitura
+import alforria.funcoes_escrita as escrita
 
 parser = argparse.ArgumentParser(
     description='Converte o SAR para csv')
@@ -18,18 +18,19 @@ parser.add_argument('-o', help='Arquivo de saida', default='sar.csv')
 parser.add_argument('-i', help='Arquivo de entrada', default=None)
 args = parser.parse_args()
 
-##
 
-paths = leitura.ler_conf('../config/paths.cnf')
+def sar_to_csv():
 
-SARPATH = paths['SARPATH'] if args.i == None else args.i
-GRUPOSPATH = paths['GRUPOSPATH']
-CURSOSPATH = paths['CURSOSPATH']
+    paths = leitura.ler_conf('../config/paths.cnf')
 
-grupos = leitura.ler_grupos(GRUPOSPATH)
+    SARPATH = paths['SARPATH'] if args.i == None else args.i
+    GRUPOSPATH = paths['GRUPOSPATH']
+    CURSOSPATH = paths['CURSOSPATH']
 
-cursos = leitura.ler_curso_do_sar097(CURSOSPATH)
+    grupos = leitura.ler_grupos(GRUPOSPATH)
 
-turmas = leitura.ler_sar(SARPATH, grupos, cursos=cursos)
+    cursos = leitura.ler_curso_do_sar097(CURSOSPATH)
 
-escrita.sar_to_csv(turmas, args.o)
+    turmas = leitura.ler_sar(SARPATH, grupos, cursos=cursos)
+
+    escrita.sar_to_csv(turmas, args.o)
