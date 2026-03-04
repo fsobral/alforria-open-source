@@ -8,18 +8,35 @@ Este script simplesmente le o SAR23 original e o converte em um arquivo muito ma
 """
 
 import argparse
+import logging
 
 import alforria.funcoes_leitura as leitura
 import alforria.funcoes_escrita as escrita
 
 parser = argparse.ArgumentParser(
     description='Converte o SAR para csv')
-parser.add_argument('-o', help='Arquivo de saida', default='sar.csv')
-parser.add_argument('-i', help='Arquivo de entrada', default=None)
+parser.add_argument('i', help='Arquivo de entrada', default=None)
+parser.add_argument('o', help='Arquivo de saida', default='sar.csv')
+parser.add_argument('-v', help='Nivel de saida desejado. Quanto mais v\'s ' +
+                    'maior a quantidade de informacao.', action='count')
 args = parser.parse_args()
 
 
 def sar_to_csv():
+
+    logger = logging.getLogger('alforria')
+
+    if args.v is None or args.v == 0:
+
+        logger.setLevel(logging.ERROR)
+
+    elif args.v == 1:
+
+        logger.setLevel(logging.INFO)
+
+    else:
+
+        logger.setLevel(logging.DEBUG)
 
     paths = leitura.ler_conf('../config/paths.cnf')
 

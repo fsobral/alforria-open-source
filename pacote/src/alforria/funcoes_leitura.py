@@ -52,7 +52,7 @@ def ler_curso_do_sar097(sarfile):
                 if c not in d:
                     d[c] = curso
 
-                # print("{cod:6s} {turma:3s} {curso:20s}".format(cod=c, turma=t, curso=curso))
+                logger.debug("{cod:6s} {turma:3s} {curso:20s}".format(cod=c, turma=t, curso=curso))
 
     return d
 

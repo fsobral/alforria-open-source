@@ -159,10 +159,8 @@ def check_p_c(p, cs, params, verbosity=True):
         for d, h in c.horarios:
             if p.impedimentos[h, d] == 1:
                 logger.error(
-                    "Professor %s - impedimento no dia e horario (%d, %d)",
-                    p.nome(),
-                    d,
-                    h,
+                    "Professor {0:s} - impedimento no dia e horario ({1:d}, {2:d})".format(
+                    p.nome(), d, h)
                 )
 
                 ok = False
@@ -422,14 +420,8 @@ def checkdata(professores, turmas, pre_atribuidas, S1INI, S2INI, FANTPATH):
         for d, h in t.horarios:
             if p.impedimentos[h][d] == 1:
                 logger.warning(
-                    "AVISO: Professor "
-                    + str(p.nome())
-                    + " no dia e horario "
-                    + str((d, h))
-                    + " com impedimento e disciplina "
-                    + "pre-atribuida "
-                    + str(t.id())
-                    + ". O impedimento NÃO será removido.\n"
+                    "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s. O impedimento NÃO será removido.",
+                    p.nome(), d, h, t.id()
                 )
 
                 # p.impedimentos[h][d]=0
