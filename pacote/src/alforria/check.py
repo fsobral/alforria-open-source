@@ -700,7 +700,7 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
 
         else:
 
-            difmin = max(4, chminanual - soma)
+            difmin = soma + max(4, chminanual - soma)
             # Se ja deu a minima da graduacao, mas ainda nao deu a minima legal e tem desconto, entao o maximo eh o minimo
             if p.pos:
                 p.chmax = max(chminanual, difmin)
