@@ -699,6 +699,11 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                 p.chmax = max(p.chmax, p.chmax2)
 
         else:
+
+            # Se ja deu a minima da graduacao, mas ainda nao deu a minima legal e tem desconto, entao o maximo eh o minimo
+            if p.pos:
+                p.chmax = chminanual
+
             if not p.licenca1 and soma1 > chmaxsem:
                 logger.info(
                     "Pre-atribuição viola carga horária "

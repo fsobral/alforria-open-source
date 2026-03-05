@@ -164,7 +164,7 @@ def ler_solucao(professores, turmas, arquivo):
             if not "(" in linha:
                 continue
 
-            a = re.split(r"[\[\]]", linha)
+            a = re.split(r"[\(\)]", linha)
 
             b = a[1].split(",")
             professor = b[0]
@@ -725,7 +725,7 @@ converter_preferencia = {
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def ler_pref(form, grupos, max_impedimentos):
+def ler_pref(form, grupos, max_impedimentos, version = "2026"):
     professores = []
     with open(form, "r", encoding="utf-8") as f:
         for l in f:
@@ -777,6 +777,7 @@ def ler_pref(form, grupos, max_impedimentos):
                 or "PCM" in p.programa_pos
                 or "PEQ" in p.programa_pos
                 or "PROFMAT" in p.programa_pos
+                or "PROFCIAMB" in p.programa_pos
                 or "OUTRO" in p.programa_pos
             )
             # Pesos das disciplinas
@@ -787,6 +788,17 @@ def ler_pref(form, grupos, max_impedimentos):
             p.peso_numdisc =           funcoes_gerais.convert_numeric_field(float, next(tokens))
             p.peso_manha_noite =       funcoes_gerais.convert_numeric_field(float, next(tokens))
             p.peso_janelas_bruto =     funcoes_gerais.convert_numeric_field(float, next(tokens))
+            
+            if version == "2026":
+
+                if p.peso_disciplinas_bruto > 0: p.peso_disciplinas_bruto = 4 - p.peso_disciplinas_bruto 
+                if p.peso_horario_bruto > 0:     p.peso_horario_bruto = 4 - p.peso_horario_bruto     
+                if p.peso_cargahor > 0:          p.peso_cargahor = 4 - p.peso_cargahor          
+                if p.peso_distintas > 0:         p.peso_distintas = 4 - p.peso_distintas         
+                if p.peso_numdisc > 0:           p.peso_numdisc = 4 - p.peso_numdisc           
+                if p.peso_manha_noite > 0:       p.peso_manha_noite = 4 - p.peso_manha_noite       
+                if p.peso_janelas_bruto > 0:     p.peso_janelas_bruto = 4 - p.peso_janelas_bruto     
+
             # Inaptidao em grupos
             w = funcoes_gerais.uniformize(next(tokens))
             if len(w) > 0:
