@@ -116,6 +116,9 @@ function alforria(;
     # Carga horaria minima anual (horas/semana)
     chmin :: Dict{String, Int64} = Dict{String, Int64}(),
 
+    chesp_efetivo_anual :: Int64 = 18,
+    chesp_temporario_anual :: Int64 = 36,
+
     # Optimizer options
     # Tempo em segundos
     cputime :: Float64 = 7200.0,
@@ -265,6 +268,7 @@ function alforria(;
     for (p, i) in chmax
         chmax_in[p] = i
     end
+    println(chmax_in)
 
 
     chmax1_in = _cria_ch_s(P, chmax1, 1, licenca, temporario, chmax_temporario_semestral, chmax_efetivo_semestral)
@@ -320,8 +324,6 @@ function alforria(;
     # capacidade_departamento_sup = sum(chmax_in[p] for p in P)
     # capacidade_departamento_inf = aproveitamento_minimo*(sum(chmax[p] for p in P)),
     # Carga horária média (esperada)
-    chesp_efetivo_anual = 18
-    chesp_temporario_anual = 36
 
     # Carga horária esperada 
     chesp = Dict(p => p in temporario ? 
@@ -641,7 +643,7 @@ return alforria_mod, x
 
 end
 
-# mod, x = alforria(T=T, P=P, G=G, T_PRE=T_PRE,
+# mod, x = alforria(;T=T, P=P, G=G, T_PRE=T_PRE,
 #                   chmax_efetivo_anual=chmax_efetivo_anual, chmax_efetivo_semestral=chmax_efetivo_semestral,
 #                   chmax_temporario_anual=chmax_temporario_anual, chmax_temporario_semestral=chmax_temporario_semestral,
 #                   chmin_efetivo_anual=chmin_efetivo_anual, chmin_temporario_anual=chmin_temporario_anual, chmin_graduacao=chmin_graduacao,
@@ -652,7 +654,7 @@ end
 #                   peso_horario=peso_horario, peso_distintas=peso_distintas, peso_manha_noite=peso_manha_noite, peso_janelas=peso_janelas,
 #                   inapto=inapto,
 #                   pref_grupo=pref_grupo, pref_hor=pref_hor, pref_janelas=pref_janelas, impedimento=impedimento,
-#                   chmax=chmax, chmax1=chmax1, chmax2=chmax2
+#                   chmax=chmax, chmax1=chmax1, chmax2=chmax2, chesp_efetivo_anual=chesp_efetivo_anual, chesp_temporario_anual=chesp_temporario_anual
 #                   )
 
 # optimize!(mod)
