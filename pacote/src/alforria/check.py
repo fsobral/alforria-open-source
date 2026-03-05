@@ -700,9 +700,10 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
 
         else:
 
+            difmin = max(4, chminanual - soma)
             # Se ja deu a minima da graduacao, mas ainda nao deu a minima legal e tem desconto, entao o maximo eh o minimo
             if p.pos:
-                p.chmax = chminanual
+                p.chmax = max(chminanual, difmin)
 
             if not p.licenca1 and soma1 > chmaxsem:
                 logger.info(
@@ -713,7 +714,10 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma1,
                 )
                 p.chmax1 = soma1
-                p.chmax = max(chmaxanual, soma1)
+                if p.pos: 
+                    p.chmax = max(chminanual, difmin, soma1)
+                else:
+                    p.chmax = max(chmaxanual, soma1)
 
             if not p.licenca2 and soma2 > chmaxsem:
                 logger.info(
@@ -724,7 +728,10 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma2,
                 )
                 p.chmax2 = soma2
-                p.chmax = max(chmaxanual, soma2)
+                if p.pos: 
+                    p.chmax = max(chminanual, difmin, soma2)
+                else:
+                    p.chmax = max(chmaxanual, soma2)
 
     # Remove professores fantasmas
     for p in p_fantasma:
