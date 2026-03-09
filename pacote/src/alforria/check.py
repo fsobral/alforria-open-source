@@ -234,6 +234,7 @@ def check_p(p, params):
             chminanualgrad = 8
 
     if p.licenca1 or p.licenca2:
+        chminanual /= 2
         chminanualgrad /= 2
 
     soma = p.chprevia1 + p.chprevia2
@@ -266,15 +267,8 @@ def check_p(p, params):
                 l_horarios.append((d, h, t.semestralidade))
 
             if p.impedimentos[h, d] == 1:
-                logger.error(
-                    "AVISO: Professor "
-                    + str(p.nome())
-                    + " no dia e horario "
-                    + str((d, h))
-                    + " com impedimento e disciplina "
-                    + "pre-atribuida "
-                    + str(t.id())
-                    + "."
+                logger.error( "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s.",
+                    p.nome(), d, h, t.id()
                 )
 
                 ok = False
