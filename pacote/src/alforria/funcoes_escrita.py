@@ -425,7 +425,7 @@ def escreve_atribuicoes(professores, turmas, arquivo):
         for p in professores:
             for t in p.turmas_a_lecionar:
                 # TODO: Codigo virar numero e nao texto
-                if t.codigo.find("666") == 0:
+                if int(t.codigo) >= 60000 and int(t.codigo) < 70000:
                     continue
 
                 # TODO: trocar p.matricula por p.id()
