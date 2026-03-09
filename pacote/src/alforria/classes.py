@@ -109,25 +109,35 @@ class Turma:  ##################################################################
 
     # ----------------------------------------------------------------------------------------------------
     def __str__(self):
-        if self.professor is None:
-            return (
-                self.id()
-                + " Sem professor "
+
+        return ( self.id()
+                + " "
+                + (" Sem professor" if self.professor is None else self.professor.id())
                 + " CH: "
                 + str(self.ch)
                 + " "
-                + str(self.horarios)
-            )
-        else:
-            return (
-                self.id()
-                + " "
-                + self.professor.id()
-                + " CH: "
-                + str(self.ch)
-                + " "
-                + str(self.horarios)
-            )
+                + str(["({0:d}, {1:d}) ".format(*h) for h in self.horarios])
+        )
+
+        # if self.professor is None:
+        #     return (
+        #         self.id()
+        #         + " Sem professor "
+        #         + " CH: "
+        #         + str(self.ch)
+        #         + " "
+        #         + str(self.horarios)
+        #     )
+        # else:
+        #     return (
+        #         self.id()
+        #         + " "
+        #         + self.professor.id()
+        #         + " CH: "
+        #         + str(self.ch)
+        #         + " "
+        #         + str("({0:d}, {1:d}) ".format(*h) for h in self.horarios)
+        #     )
 
     # ----------------------------------------------------------------------------------------------------
     def carga_horaria(self):
@@ -492,7 +502,7 @@ class Professor:  ##############################################################
                 f.write("Janelas")
             else:
                 f.write("Hor. compactos")
-            f.write(" & Manhã e noite \\\\ \midrule\n")
+            f.write(" & Manhã e noite \\\\ \\midrule\n")
             f.write(
                 "Pesos & {0:5.2f} & {1:5.2f} & {2:5.2f} & {3:5.2f} & {4:5.2f} & {5:5.2f} & {6:5.2f} \\\\\n".format(
                     self.peso_disciplinas,
