@@ -1,6 +1,6 @@
 """Pacote Alforria"""
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 import logging
 import re
@@ -64,12 +64,59 @@ _course_professor_search = dict()
 
 _hd_course_search = dict()
 
+history = []
+future = []
+
+inversas = {}
+
 
 def set_config_path(path: str):
     global _PATHS_PATH, _ALFCFG_PATH, _CONST_PATH
     _PATHS_PATH = path + "/paths.cnf"
     _ALFCFG_PATH = path + "/alforria.cnf"
     _CONST_PATH = path + "/constantes.cnf"
+
+
+def rastreavel(funcao):
+    def interna(*args, **kargs):
+        future.clear()
+        history.append(
+            {
+                "undo": lambda: inversas[funcao](*args, **kargs),
+                "redo": lambda: funcao(*args, **kargs),
+            }
+        )
+        return funcao(*args, **kargs)
+
+    return interna
+
+
+def inversa_de(funcao):
+    def interna(funcao_inversa):
+        inversas[funcao] = funcao_inversa
+        return funcao_inversa
+
+    return interna
+
+
+def _undo_():
+    if len(history) == 0:
+        print("tem nada")
+        return
+
+    operacao = history.pop()
+    future.append(operacao)
+    return operacao["undo"]()
+
+
+def _redo_():
+    if len(future) == 0:
+        print("tem nada")
+        return
+
+    operacao = future.pop()
+    history.append(operacao)
+    return operacao["redo"]()
 
 
 def __gen_stats__(params):
@@ -396,6 +443,7 @@ def _set_log_level_(level):
     print("Changed logger level")
 
 
+@rastreavel
 def _move_to_(*args):
     """Move a set o courses from a professor to another. Does not check
     overlapping courses.
@@ -447,6 +495,11 @@ def _move_to_(*args):
         _remove_from_(t, p_from)
 
         _attribute_t_to_p(t, p_to)
+
+
+@inversa_de(_move_to_)
+def _(*args):
+    return _move_to_(args[1], args[0], args[2:])
 
 
 def _parse_turmas_gen_(cstr, course_fast_index):
@@ -521,6 +574,7 @@ def _attribute_t_to_p(t, p):
     #     tvinc.add_professor(p)
 
 
+@rastreavel
 def _remove_(*args):
     """
     Remove the given courses from the given professor.
@@ -548,6 +602,7 @@ def _remove_(*args):
         _remove_from_(tc, p)
 
 
+@rastreavel
 def _remove_from_(t, p):
     """Remove turma 't' do professor 'p'. Se a turma eh anual, entao
     remove o segundo semestre tambem.
@@ -578,6 +633,8 @@ def _remove_from_(t, p):
         # tvinc.remove_professor(p)
 
 
+# inverso do remove
+@rastreavel
 def _attribute_(*args):
     """This function attributes courses to professors and professors to
     courses, according to the specified files or according to the arguments.

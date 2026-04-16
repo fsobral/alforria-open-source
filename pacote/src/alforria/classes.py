@@ -84,7 +84,6 @@ class Turma:  ##################################################################
     def __init__(self):
         self.codigo = None
         self.turma = None
-        self.codigo = None
         self.nome = None
         self.semestralidade = None  # 1 ou 2
         self.horarios: list[
@@ -103,9 +102,7 @@ class Turma:  ##################################################################
 
     # ----------------------------------------------------------------------------------------------------
     def id(self):
-        return (
-            str(self.codigo) + "_" + str(self.turma) + "_S" + str(self.semestralidade)
-        )
+        return str(self.codigo) + "-" + str(self.turma) + "-" + str(self.semestralidade)
 
     # ----------------------------------------------------------------------------------------------------
     def __str__(self):
@@ -683,7 +680,7 @@ def serialize(self):
         "pos": self.pos,
         "observacoes": self.observacoes,
         # # --------------------------------Valores lidos no arquivo de solucao---------------------
-        "turmasALecionar": [t.codigo for t in self.turmas_a_lecionar],
+        "turmasALecionar": [t.id() for t in self.turmas_a_lecionar],
         "cargaHoraria": self.carga_horaria,
     }
 
