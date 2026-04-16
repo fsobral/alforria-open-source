@@ -123,50 +123,54 @@ function preencheFormulario!(
 	
 	for p in conj.P
 		if !haskey(form.chprevia1, p)
-			form.chprevia1[p] = 0
+			form.chprevia1[p] = 0.0
 		end
 
 		if !haskey(form.chprevia2, p)
-			form.chprevia2[p] = 0
+			form.chprevia2[p] = 0.0
 		end
-		
+        
 		if !haskey(form.peso_disciplinas, p)
-			form.peso_disciplinas[p] = 5
+			form.peso_disciplinas[p] = 0.0
 		end
+        
+        if !haskey(form.peso_numdisc, p)
+            form.peso_numdisc[p] = 5.0
+        end
 		
 		if !haskey(form.peso_cargahor, p)
-		   form.peso_cargahor[p] = 5 
+		   form.peso_cargahor[p] = 5.0
 		end
 	
 		if !haskey(form.peso_horario, p)
-			form.peso_horario[p] = 5
+			form.peso_horario[p] = 5.0
 		end
 
 		if !haskey(form.peso_distintas, p)
-			form.peso_distintas[p] = 5
+			form.peso_distintas[p] = 5.0
 		end
 
 		if !haskey(form.peso_manha_noite, p)
-			form.peso_manha_noite[p] = 5
+			form.peso_manha_noite[p] = 5.0
 		end
 		
 		if !haskey(form.peso_janelas, p)
-			form.peso_janelas[p] = 5
+			form.peso_janelas[p] = 5.0
 		end
 	
 		for g in conj.G
-			if ((p, g) in form.inapto && (sum((p, t) in form.pre_atribuida for t in conj.T if sar.turma_grupo[t] == g) >= 1))
+			if ((p, g) in form.inapto && (sum((p, t) in form.pre_atribuida for t in conj.T if (sar.turma_grupo[t] == g),init=0) >= 1))
 				delete!(form.inapto, (p, g))
 			end    
 
 			if !haskey(form.pref_grupo, (p, g))
-				form.pref_grupo[(p,g)] = 0
+				form.pref_grupo[(p,g)] = 0.0
 			end
 		end
 
 		for d in conj.D, h in conj.H
 			if !haskey(form.pref_hor, (p, d, h))
-				form.pref_hor[(p, d, h)] = 5
+				form.pref_hor[(p, d, h)] = 5.0
 			end
 		end
 
@@ -517,10 +521,33 @@ function alforria(
 	conj:: ConjuntosAlforria,
 	sar:: ParametrosSAR,
 	form:: ParametrosFormulario,
-	conv::ParametrosConvencionados)
+	conv::ParametrosConvencionados,
+    opt::OptmizerOptions)
 
-	# ParaisoInferno
-	# CustoMarginal
+
+
+    # alforria_mod = Model(HiGHS.Optimizer)
+
+    # set_attribute(alforria_mod, "parallel", "on")
+    # set_attribute(alforria_mod, "presolve", "on")
+    # set_attribute(alforria_mod, "mip_rel_gap", 0.6)
+    # set_attribute(alforria_mod, "time_limit", 7200.0)
+    # set_attribute(alforria_mod, "solution_file", "alforria.sol")
+    # set_attribute(alforria_mod, "write_solution_to_file", true)
+    # set_attribute(alforria_mod, "mip_heuristic_effort", 1.0)
+
+    # alforria_mod = Model(Gurobi.Optimizer)
+
+    # set_attribute(alforria_mod, "TimeLimit", opt.cputime)
+    # set_attribute(alforria_mod, "MIPGap", opt.mip_gap)
+    # set_attribute(alforria_mod, "ResultFile", opt.solfile)
+    # set_attribute(alforria_mod, "Threads", opt.threads)
+
+    #     turma_grupo_in = Dict{String, String}( t => "__NOGROUP__" for t in T)
+    # push!(turma_grupo_in, turma_grupo...)
+
+    # G_in = Set{String}(["__NOGROUP__"])
+    # push!(G_in, G...)
 
 	preencheSAR!(sar, conj)
 	preencheFormulario!(sar, form, conj, conv)
@@ -539,6 +566,42 @@ function alforria(
 
 	defineInsatisfacao!(alforria_mod, conj, deriv, form, var, varInsat)
 
+# if fobj == :fobj1
+
+#         @objective(alforria_mod, Min,
+#         	max_das_insat +
+#         	1000000 * gap_ch_graduacao + 
+#             10000   * gap_horario_max +
+#             100     * gap_ch_tt
+#         )
+
+#     elseif fobj == :fobj2
+
+#         @objective(alforria_mod, Min,
+#            (1 / length(P)) * sum(insat[p] for p in setdiff(P, P_OUT), init = 0) +
+#         	1000000 * gap_ch_graduacao + 
+#             10000   * gap_horario_max +
+#             100     * gap_ch_tt
+#         )
+
 	return alforria_mod, var, varInsat
 
 end
+
+
+
+# mod, x = alforria(;T=T, P=P, G=G, T_PRE=T_PRE,
+#                   chmax_efetivo_anual=chmax_efetivo_anual, chmax_efetivo_semestral=chmax_efetivo_semestral,
+#                   chmax_temporario_anual=chmax_temporario_anual, chmax_temporario_semestral=chmax_temporario_semestral,
+#                   chmin_efetivo_anual=chmin_efetivo_anual, chmin_temporario_anual=chmin_temporario_anual, chmin_graduacao=chmin_graduacao,
+#                   pre_atribuida=pre_atribuida,
+#                   c=c, ch=ch, ch1=ch1, ch2=ch2, vinculadas=vinculadas, turma_grupo,
+#                   temporario=temporario, chprevia1=chprevia1, chprevia2=chprevia2, licenca=licenca,
+#                   peso_disciplinas=peso_disciplinas, peso_numdisc=peso_numdisc, peso_cargahor=peso_cargahor,
+#                   peso_horario=peso_horario, peso_distintas=peso_distintas, peso_manha_noite=peso_manha_noite, peso_janelas=peso_janelas,
+#                   inapto=inapto,
+#                   pref_grupo=pref_grupo, pref_hor=pref_hor, pref_janelas=pref_janelas, impedimento=impedimento,
+#                   chmax=chmax, chmax1=chmax1, chmax2=chmax2, chesp_efetivo_anual=chesp_efetivo_anual, chesp_temporario_anual=chesp_temporario_anual
+#                   )
+
+# optimize!(mod)
