@@ -1,5 +1,6 @@
 # coding=utf8
 
+import logging
 import re
 from datetime import date
 
@@ -8,9 +9,8 @@ import pandas as pd
 
 from . import classes, funcoes_gerais
 
-import logging
+logger = logging.getLogger("alforria")
 
-logger = logging.getLogger('alforria')
 
 def sar292_to_df(sarfile):
     rx = re.compile(
@@ -52,7 +52,11 @@ def ler_curso_do_sar097(sarfile):
                 if c not in d:
                     d[c] = curso
 
-                logger.debug("{cod:6s} {turma:3s} {curso:20s}".format(cod=c, turma=t, curso=curso))
+                logger.debug(
+                    "{cod:6s} {turma:3s} {curso:20s}".format(
+                        cod=c, turma=t, curso=curso
+                    )
+                )
 
     return d
 
@@ -239,56 +243,45 @@ def ler_solucao_jl(professores, turmas, arquivo):
             professor = b[0]
             variavel = a[0]
 
-            idx_p = {p.nome() : p for p in professores}
-            idx_t = {t.id() : t for t in turmas}
+            idx_p = {p.nome(): p for p in professores}
+            idx_t = {t.id(): t for t in turmas}
 
             p = idx_p[professor]
 
             if variavel == "carga_horaria":
-
                 p.carga_horaria = float(a[-1])
 
             elif variavel == "x":
-
                 turmaid = b[1]
 
                 if float(a[-1]) > 0.9:
-
                     t = idx_t[turmaid]
 
                     p.add_course(t)
                     t.add_professor(p)
 
             elif variavel == "insat":
-
                 p.insatisfacao = float(a[-1])
 
             elif variavel == "insat_disciplinas":
-
                 p.insat_disciplinas = float(a[-1])
 
             elif variavel == "insat_cargahor":
-
                 p.insat_cargahor = float(a[-1])
 
             elif variavel == "insat_numdisc":
-
                 p.insat_numdisc = float(a[-1])
 
             elif variavel == "insat_horario":
-
                 p.insat_horario = float(a[-1])
 
             elif variavel == "insat_distintas":
-
                 p.insat_distintas = float(a[-1])
 
             elif variavel == "insat_manha_noite":
-
                 p.insat_manha_noite = float(a[-1])
 
             elif variavel == "insat_janelas":
-
                 p.insat_janelas = float(a[-1])
 
 
@@ -725,7 +718,7 @@ converter_preferencia = {
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def ler_pref(form, grupos, max_impedimentos, version = "2026"):
+def ler_pref(form, grupos, max_impedimentos, version="2026"):
     professores = []
     with open(form, "r", encoding="utf-8") as f:
         for l in f:
@@ -781,23 +774,37 @@ def ler_pref(form, grupos, max_impedimentos, version = "2026"):
                 or "OUTRO" in p.programa_pos
             )
             # Pesos das disciplinas
-            p.peso_disciplinas_bruto = funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_horario_bruto =     funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_cargahor =          funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_distintas =         funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_numdisc =           funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_manha_noite =       funcoes_gerais.convert_numeric_field(float, next(tokens))
-            p.peso_janelas_bruto =     funcoes_gerais.convert_numeric_field(float, next(tokens))
-            
-            if version == "2026":
+            p.peso_disciplinas_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_horario_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_cargahor = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_distintas = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_numdisc = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_manha_noite = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_janelas_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
 
-                if p.peso_disciplinas_bruto > 0: p.peso_disciplinas_bruto = 4 - p.peso_disciplinas_bruto 
-                if p.peso_horario_bruto > 0:     p.peso_horario_bruto = 4 - p.peso_horario_bruto     
-                if p.peso_cargahor > 0:          p.peso_cargahor = 4 - p.peso_cargahor          
-                if p.peso_distintas > 0:         p.peso_distintas = 4 - p.peso_distintas         
-                if p.peso_numdisc > 0:           p.peso_numdisc = 4 - p.peso_numdisc           
-                if p.peso_manha_noite > 0:       p.peso_manha_noite = 4 - p.peso_manha_noite       
-                if p.peso_janelas_bruto > 0:     p.peso_janelas_bruto = 4 - p.peso_janelas_bruto     
+            if version == "2026":
+                if p.peso_disciplinas_bruto > 0:
+                    p.peso_disciplinas_bruto = 4 - p.peso_disciplinas_bruto
+                if p.peso_horario_bruto > 0:
+                    p.peso_horario_bruto = 4 - p.peso_horario_bruto
+                if p.peso_cargahor > 0:
+                    p.peso_cargahor = 4 - p.peso_cargahor
+                if p.peso_distintas > 0:
+                    p.peso_distintas = 4 - p.peso_distintas
+                if p.peso_numdisc > 0:
+                    p.peso_numdisc = 4 - p.peso_numdisc
+                if p.peso_manha_noite > 0:
+                    p.peso_manha_noite = 4 - p.peso_manha_noite
+                if p.peso_janelas_bruto > 0:
+                    p.peso_janelas_bruto = 4 - p.peso_janelas_bruto
 
             # Inaptidao em grupos
             w = funcoes_gerais.uniformize(next(tokens))
@@ -908,7 +915,7 @@ def ler_pre_atribuidas(arquivo, arquivo_de_fantasmas, professores, turmas):
 
     fantasma = []
 
-    with open(arquivo_de_fantasmas, "r") as fant:
+    with open(arquivo_de_fantasmas, "r", encoding="utf-8") as fant:
         for linha in fant:
             tok = linha.split("\t")
 
@@ -916,13 +923,13 @@ def ler_pre_atribuidas(arquivo, arquivo_de_fantasmas, professores, turmas):
 
     delim = "\t"
 
-    with open(arquivo, "r") as f:
+    with open(arquivo, "r", encoding="utf-8") as f:
         for l in f:
             if len(l) > 0 and not l.isspace() and r"," in l:
                 delim = r","
                 break
 
-    with open(arquivo, "r") as f:
+    with open(arquivo, "r", encoding="utf-8") as f:
         linha = 1
 
         pre_atribuidas = []
