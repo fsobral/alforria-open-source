@@ -1,10 +1,13 @@
 import datetime
 import os
+import logging
+import re
 
 import pandas as pd
 
 from . import funcoes_leitura as leitura
 
+logger = logging.getLogger('alforria')
 
 def gera_declaracao_ch_semestre(
     listah, s, dirh="/home/fsobral/GoogleDrive/Alforria/2024/horarios"
@@ -422,7 +425,7 @@ def escreve_atribuicoes(professores, turmas, arquivo):
         for p in professores:
             for t in p.turmas_a_lecionar:
                 # TODO: Codigo virar numero e nao texto
-                if t.codigo.find("666") == 0:
+                if int(t.codigo) >= 60000 and int(t.codigo) < 70000:
                     continue
 
                 # TODO: trocar p.matricula por p.id()
@@ -504,14 +507,20 @@ def atualiza_dat2(professores, arquivo):
 
     # Leitura dos professores ja excluidos
 
-    with open(arquivo, "r") as f:
-        l = f.readline().split()
+    try:
 
-        if len(l) > 3:
-            for nome in l[3:]:
-                for p in professores:
-                    if p.nome() == nome:
-                        listap.append(p)
+        with open(arquivo, "r") as f:
+            l = f.readline().split()
+
+            if len(l) > 3:
+                for nome in l[3:]:
+                    for p in professores:
+                        if p.nome() == nome:
+                            listap.append(p)
+
+    except FileNotFoundError:
+
+        logger.debug("\tatualiza_jl: file not found.")
 
     professores.sort(key=lambda x: x.insatisfacao, reverse=True)
 
@@ -528,9 +537,9 @@ def atualiza_dat2(professores, arquivo):
 
     # Gera o novo arquivo
 
-    print("Professores retirados da funcao objetivo:")
+    logger.info("Professores retirados da funcao objetivo:")
     for p in listap:
-        print("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
+        logger.info("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
 
     with open(arquivo, "w") as f:
         f.write("set P_OUT :=")
@@ -546,6 +555,82 @@ def atualiza_dat2(professores, arquivo):
     # Antes de sair, ordena os professores por nome
     professores.sort(key=lambda x: x.nome())
 
+
+def atualiza_jl(professores, arquivo):
+    """
+    Esta funcao serve para remover professores muito insatisfeitos e preparar para
+    uma nova rodada.
+    """
+
+    listap = []
+
+    # Leitura dos professores ja excluidos
+
+    # Assume that this file is a single line
+    # P_OUT :: Set{String} = Set([ "T1", "T2", ..., "TN"])
+
+    try:
+
+        with open(arquivo, "r") as f:
+            l = f.readline()
+
+            nomes = [re.match(r'"([^"]+)"', r)[1] for r in re.findall(r'"[^"]+"', l)]
+
+            logger.debug("\tatualiza_jl: found %d names", len(nomes))
+
+            for nome in nomes:
+                for p in professores:
+                    if p.nome() == nome:
+                        listap.append(p)
+                        break
+    
+    except FileNotFoundError:
+
+        logger.debug("\tatualiza_jl: file not found.")
+
+
+    professores.sort(key=lambda x: x.insatisfacao, reverse=True)
+
+    # Procura o proximo insatisfeito que nao foi excluido
+
+    i = 0
+    while (i < len(professores)) and (professores[i] in listap):
+        i = i + 1
+
+    maxinsat = -100
+    if i < len(professores):
+        maxinsat = professores[i].insatisfacao
+        listap.append(professores[i])
+
+    # Gera o novo arquivo
+
+    logger.info("\tProfessores retirados da funcao objetivo:")
+    for p in listap:
+        logger.info("\t{0:50s} insat: {1:10.7f}".format(p.nome(), p.insatisfacao))
+
+    with open(arquivo, "w") as f:
+        f.write("P_OUT :: Set{String}([")
+
+        for p in listap[0:-1]:
+            f.write('"{0:s}", '.format(p.nome()))
+
+        f.write('"{0:s}"])\n\n'.format(listap[-1].nome()))
+
+        f.write("ub_insat :: Dict{String, Float64} = Dict(\n")
+
+        for p in listap[0:-1]:
+
+            f.write('\t"{0:s} => {1:3.5f},\n'.format(p.nome(), max(maxinsat, p.insatisfacao)))
+
+        else:
+
+            p = listap[-1]
+            f.write('\t"{0:s} => {1:3.5f}\n'.format(p.nome(), max(maxinsat, p.insatisfacao)))
+
+        f.write(")\n")
+
+    # Antes de sair, ordena os professores por nome
+    professores.sort(key=lambda x: x.nome())
 
 ####################################################################################################################
 ####################                  Funcao              escreve jl                       #########################
@@ -680,16 +765,16 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.seek(f.tell() - 2, 0)
         f.write("\n])\n\n")
 
-        f.write("pref_grupo :: Dict{Tuple{String, String}, Float16} =\n")
-        f.write("Dict{Tuple{String, String}, Float16}(\n")
+        f.write("pref_grupo :: Dict{Tuple{String, String}, Float64} =\n")
+        f.write("Dict{Tuple{String, String}, Float64}(\n")
         for p in professores:
             for g in p.pref_grupos.keys():
                 f.write(f'\t("{p.id()}", "{g}") => {p.pref_grupos[g]},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("pref_hor :: Dict{Tuple{String, Int64, Int64}, Float16} =\n")
-        f.write("Dict{Tuple{String, Int64, Int64}, Float16}(\n")
+        f.write("pref_hor :: Dict{Tuple{String, Int64, Int64}, Float64} =\n")
+        f.write("Dict{Tuple{String, Int64, Int64}, Float64}(\n")
         for p in professores:
             for d in range(2, 8):
                 for h in range(1, 17):
@@ -727,43 +812,43 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.seek(f.tell() - 1, 0)
         f.write("\n])\n\n")
 
-        f.write("peso_disciplinas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_disciplinas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_disciplinas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_horario  :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_horario  :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_horario},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_cargahor :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_cargahor :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_cargahor},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_distintas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_distintas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_distintas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_janelas :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_janelas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_janelas},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_numdisc :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_numdisc :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_numdisc},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
 
-        f.write("peso_manha_noite :: Dict{String, Float16} = Dict{String, Float16}(\n")
+        f.write("peso_manha_noite :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_manha_noite},\n')
         f.seek(f.tell() - 2, 0)

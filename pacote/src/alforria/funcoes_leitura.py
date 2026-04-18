@@ -1,5 +1,6 @@
 # coding=utf8
 
+import logging
 import re
 from datetime import date
 
@@ -7,6 +8,8 @@ import numpy
 import pandas as pd
 
 from . import classes, funcoes_gerais
+
+logger = logging.getLogger("alforria")
 
 
 def sar292_to_df(sarfile):
@@ -49,7 +52,11 @@ def ler_curso_do_sar097(sarfile):
                 if c not in d:
                     d[c] = curso
 
-                # print("{cod:6s} {turma:3s} {curso:20s}".format(cod=c, turma=t, curso=curso))
+                logger.debug(
+                    "{cod:6s} {turma:3s} {curso:20s}".format(
+                        cod=c, turma=t, curso=curso
+                    )
+                )
 
     return d
 
@@ -97,7 +104,7 @@ def ler_solucao_gurobi_jump(professores, turmas, arquivo):
             if not "[" in linha:
                 continue
 
-            a = re.split("[\[\]]", linha)
+            a = re.split(r"[\[\]]", linha)
 
             b = a[1].split(",")
             professor = b[0]
@@ -161,7 +168,7 @@ def ler_solucao(professores, turmas, arquivo):
             if not "(" in linha:
                 continue
 
-            a = re.split("[\[\]]", linha)
+            a = re.split(r"[\(\)]", linha)
 
             b = a[1].split(",")
             professor = b[0]
@@ -214,6 +221,68 @@ def ler_solucao(professores, turmas, arquivo):
                 for p in professores:
                     if p.nome() == professor:
                         p.insat_janelas = float(linha.split()[-1])
+
+
+def ler_solucao_jl(professores, turmas, arquivo):
+    """Le a solucao escrita em `arquivo` quando gerada pelo Gurobi (.sol) com o modelo via JuMP. Atribui a solucao obtida aos `professores` e `turmas`.
+
+    Args:
+        professores (list): lista de professores
+        turmas (list): lista de turmas
+        arquivo (str): arquivo com a solucao (extensao .sol)
+    """
+    with open(arquivo, "r") as fonte:
+        for linha in fonte:
+            # Pula as linhas que nao setam variaveis
+            if not "[" in linha:
+                continue
+
+            a = re.split(r"[\[\]]", linha)
+
+            b = a[1].split(",")
+            professor = b[0]
+            variavel = a[0]
+
+            idx_p = {p.nome(): p for p in professores}
+            idx_t = {t.id(): t for t in turmas}
+
+            p = idx_p[professor]
+
+            if variavel == "carga_horaria":
+                p.carga_horaria = float(a[-1])
+
+            elif variavel == "x":
+                turmaid = b[1]
+
+                if float(a[-1]) > 0.9:
+                    t = idx_t[turmaid]
+
+                    p.add_course(t)
+                    t.add_professor(p)
+
+            elif variavel == "insat":
+                p.insatisfacao = float(a[-1])
+
+            elif variavel == "insat_disciplinas":
+                p.insat_disciplinas = float(a[-1])
+
+            elif variavel == "insat_cargahor":
+                p.insat_cargahor = float(a[-1])
+
+            elif variavel == "insat_numdisc":
+                p.insat_numdisc = float(a[-1])
+
+            elif variavel == "insat_horario":
+                p.insat_horario = float(a[-1])
+
+            elif variavel == "insat_distintas":
+                p.insat_distintas = float(a[-1])
+
+            elif variavel == "insat_manha_noite":
+                p.insat_manha_noite = float(a[-1])
+
+            elif variavel == "insat_janelas":
+                p.insat_janelas = float(a[-1])
 
 
 ####################################################################################################################
@@ -378,7 +447,7 @@ def _csv_to_dataframe(sarfile):
         sarfile,
         header=None,
         parse_dates=[15, 16],
-        delimiter="\s*,\s*",
+        delimiter=r"\s*,\s*",
         engine="python",
         comment="#",
     )
@@ -649,7 +718,7 @@ converter_preferencia = {
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def ler_pref(form, grupos, max_impedimentos):
+def ler_pref(form, grupos, max_impedimentos, version="2026"):
     professores = []
     with open(form, "r", encoding="utf-8") as f:
         for l in f:
@@ -658,12 +727,13 @@ def ler_pref(form, grupos, max_impedimentos):
             next(tokens)  # Pula timestamp
             next(tokens)  # Pula email duplicado
             p.nome_completo = funcoes_gerais.uniformize(next(tokens))  # Identificacao
+            logger.debug("\tReading teacher %s", p.nome_completo)
             p.matricula = int(next(tokens))  # Identificacao Unica
             # Jeito tosco de remover duplicatas
             # TODO: melhorar isso
             for i in professores:
                 if i.matricula == p.matricula:
-                    print(
+                    logger.info(
                         "AVISO: Professores "
                         + i.nome()
                         + " e "
@@ -681,7 +751,7 @@ def ler_pref(form, grupos, max_impedimentos):
                 chp2 = "0"
             p.chprevia1 = int(chp1)
             p.chprevia2 = int(chp2)
-            p.discriminacao_chprevia = next(tokens)
+            p.discriminacao_chprevia = funcoes_gerais.uniformize(next(tokens))
             w = funcoes_gerais.uniformize(next(tokens))  # Licença
             if "PRIMEIRO" in w:
                 p.licenca1 = True
@@ -700,16 +770,42 @@ def ler_pref(form, grupos, max_impedimentos):
                 or "PCM" in p.programa_pos
                 or "PEQ" in p.programa_pos
                 or "PROFMAT" in p.programa_pos
+                or "PROFCIAMB" in p.programa_pos
                 or "OUTRO" in p.programa_pos
             )
             # Pesos das disciplinas
-            p.peso_disciplinas_bruto = float(next(tokens))
-            p.peso_horario_bruto = float(next(tokens))
-            p.peso_cargahor = float(next(tokens))
-            p.peso_distintas = float(next(tokens))
-            p.peso_numdisc = float(next(tokens))
-            p.peso_manha_noite = float(next(tokens))
-            p.peso_janelas_bruto = float(next(tokens))
+            p.peso_disciplinas_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_horario_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_cargahor = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_distintas = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_numdisc = funcoes_gerais.convert_numeric_field(float, next(tokens))
+            p.peso_manha_noite = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+            p.peso_janelas_bruto = funcoes_gerais.convert_numeric_field(
+                float, next(tokens)
+            )
+
+            if version == "2026":
+                if p.peso_disciplinas_bruto > 0:
+                    p.peso_disciplinas_bruto = 4 - p.peso_disciplinas_bruto
+                if p.peso_horario_bruto > 0:
+                    p.peso_horario_bruto = 4 - p.peso_horario_bruto
+                if p.peso_cargahor > 0:
+                    p.peso_cargahor = 4 - p.peso_cargahor
+                if p.peso_distintas > 0:
+                    p.peso_distintas = 4 - p.peso_distintas
+                if p.peso_numdisc > 0:
+                    p.peso_numdisc = 4 - p.peso_numdisc
+                if p.peso_manha_noite > 0:
+                    p.peso_manha_noite = 4 - p.peso_manha_noite
+                if p.peso_janelas_bruto > 0:
+                    p.peso_janelas_bruto = 4 - p.peso_janelas_bruto
+
             # Inaptidao em grupos
             w = funcoes_gerais.uniformize(next(tokens))
             if len(w) > 0:
@@ -800,7 +896,7 @@ def ler_pref(form, grupos, max_impedimentos):
                         p.pref_horarios_bruto[h, d + 1] = converter_preferencia[pref]
             # Tudo o que vier depois daqui eh considerado comentario.
             for obs in tokens:
-                p.observacoes += obs
+                p.observacoes += funcoes_gerais.uniformize(obs)
 
             professores.append(p)
     return professores
@@ -819,7 +915,7 @@ def ler_pre_atribuidas(arquivo, arquivo_de_fantasmas, professores, turmas):
 
     fantasma = []
 
-    with open(arquivo_de_fantasmas, "r") as fant:
+    with open(arquivo_de_fantasmas, "r", encoding="utf-8") as fant:
         for linha in fant:
             tok = linha.split("\t")
 
@@ -827,13 +923,13 @@ def ler_pre_atribuidas(arquivo, arquivo_de_fantasmas, professores, turmas):
 
     delim = "\t"
 
-    with open(arquivo, "r") as f:
+    with open(arquivo, "r", encoding="utf-8") as f:
         for l in f:
             if len(l) > 0 and not l.isspace() and r"," in l:
                 delim = r","
                 break
 
-    with open(arquivo, "r") as f:
+    with open(arquivo, "r", encoding="utf-8") as f:
         linha = 1
 
         pre_atribuidas = []

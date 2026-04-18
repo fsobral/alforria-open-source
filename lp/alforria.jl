@@ -9,7 +9,6 @@ using JuMP, HiGHS
 using Gurobi
 
 
-
 function setModel(optimizer, opt)
 	mod = Model(optimizer)
 	if optimizer == HiGHS.Optimizer	
@@ -245,6 +244,7 @@ function parametrosDerivados(
 	((t ∉ keys(sar.turma_grupo)) || (p, sar.turma_grupo[t]) in form.inapto) 
 	? 0 : form.pref_grupo[p, sar.turma_grupo[t]] for p in conj.P, t in conj.T)
 
+	# ! Temos que verificar se u=3 deveria ser com h >= 11 ou h>=14!
 	horario_turno = Dict(h => (h <= 5 ? 1 : h <= 10 ? 2 : 3) for h in conj.H)
 
 	semestralidade = Set([(t, s) for t in conj.T, s in conj.S if sum(((t, s, d, h) in sar.c) for d in conj.D, h in conj.H) >= 1])

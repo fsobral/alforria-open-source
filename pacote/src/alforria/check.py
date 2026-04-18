@@ -159,10 +159,8 @@ def check_p_c(p, cs, params, verbosity=True):
         for d, h in c.horarios:
             if p.impedimentos[h, d] == 1:
                 logger.error(
-                    "Professor %s - impedimento no dia e horario (%d, %d)",
-                    p.nome(),
-                    d,
-                    h,
+                    "Professor {0:s} - impedimento no dia e horario ({1:d}, {2:d})".format(
+                    p.nome(), d, h)
                 )
 
                 ok = False
@@ -236,6 +234,7 @@ def check_p(p, params):
             chminanualgrad = 8
 
     if p.licenca1 or p.licenca2:
+        chminanual /= 2
         chminanualgrad /= 2
 
     soma = p.chprevia1 + p.chprevia2
@@ -268,15 +267,8 @@ def check_p(p, params):
                 l_horarios.append((d, h, t.semestralidade))
 
             if p.impedimentos[h, d] == 1:
-                logger.error(
-                    "AVISO: Professor "
-                    + str(p.nome())
-                    + " no dia e horario "
-                    + str((d, h))
-                    + " com impedimento e disciplina "
-                    + "pre-atribuida "
-                    + str(t.id())
-                    + "."
+                logger.error( "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s.",
+                    p.nome(), d, h, t.id()
                 )
 
                 ok = False
@@ -422,14 +414,8 @@ def checkdata(professores, turmas, pre_atribuidas, S1INI, S2INI, FANTPATH):
         for d, h in t.horarios:
             if p.impedimentos[h][d] == 1:
                 logger.warning(
-                    "AVISO: Professor "
-                    + str(p.nome())
-                    + " no dia e horario "
-                    + str((d, h))
-                    + " com impedimento e disciplina "
-                    + "pre-atribuida "
-                    + str(t.id())
-                    + ". O impedimento NÃO será removido.\n"
+                    "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s. O impedimento NÃO será removido.",
+                    p.nome(), d, h, t.id()
                 )
 
                 # p.impedimentos[h][d]=0
@@ -707,6 +693,12 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                 p.chmax = max(p.chmax, p.chmax2)
 
         else:
+
+            difmin = soma + max(4, chminanual - soma)
+            # Se ja deu a minima da graduacao, mas ainda nao deu a minima legal e tem desconto, entao o maximo eh o minimo
+            if p.pos:
+                p.chmax = max(chminanual, difmin)
+
             if not p.licenca1 and soma1 > chmaxsem:
                 logger.info(
                     "Pre-atribuição viola carga horária "
@@ -716,7 +708,10 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma1,
                 )
                 p.chmax1 = soma1
-                p.chmax = max(chmaxanual, soma1)
+                if p.pos: 
+                    p.chmax = max(chminanual, difmin, soma1)
+                else:
+                    p.chmax = max(chmaxanual, soma1)
 
             if not p.licenca2 and soma2 > chmaxsem:
                 logger.info(
@@ -727,7 +722,10 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma2,
                 )
                 p.chmax2 = soma2
-                p.chmax = max(chmaxanual, soma2)
+                if p.pos: 
+                    p.chmax = max(chminanual, difmin, soma2)
+                else:
+                    p.chmax = max(chmaxanual, soma2)
 
     # Remove professores fantasmas
     for p in p_fantasma:
