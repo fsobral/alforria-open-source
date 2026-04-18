@@ -555,7 +555,7 @@ function defineInsatisfacao!(mod::Model,
 
 end
 
-function addFuncaoObjetivo!(mod::Model, fobj::Symbol, conj::ConjuntosAlforria, var::Variaveis)
+function setFuncaoObjetivo!(mod::Model, fobj::Symbol, conj::ConjuntosAlforria, var::Variaveis)
 	if fobj == :fobj1
 
         @objective(mod, Min,
@@ -605,7 +605,7 @@ function alforria(
 
 	defineInsatisfacao!(alforria_mod, conj, deriv, form, var, varInsat)
 
-	addFuncaoObjetivo!(alforria_mod, fobj)
+	setFuncaoObjetivo!(alforria_mod, fobj, conj, var)
 
 	return alforria_mod, var, varInsat
 
