@@ -1,4 +1,3 @@
-    
 struct ConjuntosAlforria
 	P :: Set{String}        # professores
 	T :: Set{String}        # turmas
@@ -69,8 +68,8 @@ struct ParametrosConvencionados
 	trn_cheios					:: ParaisoInfernoCustoMarginal
 	turnos						:: ParaisoInfernoCustoMarginal
 
-	chesp_efetivo_anual			:: Int64 #!
-	chesp_temporario_anual		:: Int64 #! 
+	chesp_efetivo_anual			:: Int64
+	chesp_temporario_anual		:: Int64 
 end
 
 struct ParametrosDerivados
@@ -121,7 +120,7 @@ struct VariaveisInsat
 	insat_janelas
 end
 
-struct OptmizerOptions
+struct OptimizerOptions
 	cputime :: Float64 	# Tempo em segundos
 	mip_gap :: Float64	# Gap relativo
 	solfile :: String	# Caminho do arquivo de solução

@@ -3,9 +3,47 @@ Pkg.add("JuMP")
 Pkg.add("HiGHS")
 # Pkg.add("Gurobi")
 include("structs.jl")
+include("alforriaParamsExample.jl")
 
 using JuMP, HiGHS
-#using Gurobi
+using Gurobi
+
+
+
+function setModel(optimizer, opt)
+	mod = Model(optimizer)
+	if optimizer == HiGHS.Optimizer	
+		set_attribute(mod, "parallel", "on")
+		set_attribute(mod, "presolve", "on")
+		set_attribute(mod, "mip_rel_gap", opt.mip_gap)
+		set_attribute(mod, "time_limit", opt.cputime)
+		set_attribute(mod, "solution_file", opt.solfile)
+		set_attribute(mod, "write_solution_to_file", true)
+		set_attribute(mod, "mip_heuristic_effort", 1.0)
+
+	elseif optimizer == Gurobi.Optimizer
+	
+		set_attribute(mod, "TimeLimit", opt.cputime)
+		set_attribute(mod, "MIPGap", opt.mip_gap)
+		set_attribute(mod, "ResultFile", opt.solfile)
+		set_attribute(mod, "Threads", opt.threads)
+	
+	else
+		error("Otimizador não reconhecido. Use 'HiGHS' ou 'Gurobi'.")
+	end
+end
+
+function preencheGrupos!(conj::ConjuntosAlforria)
+	for t in conj.T
+		if !haskey(conj.turma_grupo, t)
+			conj.turma_grupo[t] = "__NOGROUP__"
+		end
+	end
+
+	if !("__NOGROUP__" in conj.G)
+		push!(conj.G, "__NOGROUP__")
+	end
+end
 
 function custoMarginal(paraiso::Dict{Bool, Int64}, inferno::Dict{Bool, Int64})::Dict{Bool, Float64}
 	return Dict(k => 5 / (inferno[k] - paraiso[k]) for k in [false, true])
@@ -517,42 +555,43 @@ function defineInsatisfacao!(mod::Model,
 
 end
 
+function addFuncaoObjetivo!(mod::Model, fobj::Symbol, conj::ConjuntosAlforria, var::Variaveis)
+	if fobj == :fobj1
+
+        @objective(mod, Min,
+        	var.max_das_insat +
+        	1000000 * var.gap_ch_graduacao + 
+            10000   * var.gap_horario_max +
+            100     * var.gap_ch_tt
+        )
+
+    elseif fobj == :fobj2
+
+        @objective(mod, Min,
+           (1 / length(conj.P)) * sum(var.insat[p] for p in setdiff(conj.P, conj.P_OUT), init = 0) +
+        	1000000 * var.gap_ch_graduacao + 
+            10000   * var.gap_horario_max +
+            100     * var.gap_ch_tt
+        )
+	else
+		error("Função objetivo não reconhecida. Use :fobj1 ou :fobj2.")
+	end
+end
+
 function alforria(
 	conj:: ConjuntosAlforria,
 	sar:: ParametrosSAR,
 	form:: ParametrosFormulario,
 	conv::ParametrosConvencionados,
-    opt::OptmizerOptions)
+    opt::OptmizerOptions, fobj::Symbol)
 
-
-
-    # alforria_mod = Model(HiGHS.Optimizer)
-
-    # set_attribute(alforria_mod, "parallel", "on")
-    # set_attribute(alforria_mod, "presolve", "on")
-    # set_attribute(alforria_mod, "mip_rel_gap", 0.6)
-    # set_attribute(alforria_mod, "time_limit", 7200.0)
-    # set_attribute(alforria_mod, "solution_file", "alforria.sol")
-    # set_attribute(alforria_mod, "write_solution_to_file", true)
-    # set_attribute(alforria_mod, "mip_heuristic_effort", 1.0)
-
-    # alforria_mod = Model(Gurobi.Optimizer)
-
-    # set_attribute(alforria_mod, "TimeLimit", opt.cputime)
-    # set_attribute(alforria_mod, "MIPGap", opt.mip_gap)
-    # set_attribute(alforria_mod, "ResultFile", opt.solfile)
-    # set_attribute(alforria_mod, "Threads", opt.threads)
-
-    #     turma_grupo_in = Dict{String, String}( t => "__NOGROUP__" for t in T)
-    # push!(turma_grupo_in, turma_grupo...)
-
-    # G_in = Set{String}(["__NOGROUP__"])
-    # push!(G_in, G...)
+	preencheGrupos!(conj)
+  
 
 	preencheSAR!(sar, conj)
 	preencheFormulario!(sar, form, conj, conv)
 
-	alforria_mod = Model(HiGHS.Optimizer)
+	alforria_mod = setModel(HiGHS.Optimizer, opt)
 	
 	deriv = parametrosDerivados(conj, form, sar, conv)
 
@@ -566,23 +605,7 @@ function alforria(
 
 	defineInsatisfacao!(alforria_mod, conj, deriv, form, var, varInsat)
 
-# if fobj == :fobj1
-
-#         @objective(alforria_mod, Min,
-#         	max_das_insat +
-#         	1000000 * gap_ch_graduacao + 
-#             10000   * gap_horario_max +
-#             100     * gap_ch_tt
-#         )
-
-#     elseif fobj == :fobj2
-
-#         @objective(alforria_mod, Min,
-#            (1 / length(P)) * sum(insat[p] for p in setdiff(P, P_OUT), init = 0) +
-#         	1000000 * gap_ch_graduacao + 
-#             10000   * gap_horario_max +
-#             100     * gap_ch_tt
-#         )
+	addFuncaoObjetivo!(alforria_mod, fobj)
 
 	return alforria_mod, var, varInsat
 
