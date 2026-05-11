@@ -348,7 +348,7 @@ function adicionaRestricoesEssenciais!(
 
 	# Deve haver um intervalo maior ou igual que 11h entre jornadas de trabalho em dias consecutivos
 	#! Verificar se precisa ir até 7
-	rett7 = [(p,d,s,h1,h2) for p in conj.P, d in 2:6, s in conj.S, h1 in 14:16, h2 in 1:3 if h1 - h2 >= 13]
+	rett7 = [(p,d,s,h1,h2) for p in conj.P, d in 2:6, s in conj.S, h1 in 14:16, h2 in 1:3 if h1 - h2 >= 14]
 	@constraint(mod, rest7[(p, d, s, h1, h2) in rett7],
 	sum(((t,s,d,h1) in sar.c) * var.x[p,t] for t in conj.T if !(t in conj.T_PRE)) + sum(((t,s,d + 1,h2) in sar.c) * var.x[p,t] for t in conj.T if !(t in conj.T_PRE)) <= 1)
 

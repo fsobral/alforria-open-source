@@ -1,7 +1,8 @@
-include("structs.jl")
+# include("structs.jl")
+# include("alforria.jl")
 
 conj = ConjuntosAlforria(
-    Set(["A", "B", "C"]), 
+    Set(["A"]), 
     Set(["T1", "T2"]), 
     2:7, 
     1:16, 
@@ -15,9 +16,9 @@ conj = ConjuntosAlforria(
 
 sar = ParametrosSAR(
     Set([("T1", 1, 1, 1), ("T2", 2, 2, 2)]), 
-    Dict("A" => 10, "B" => 20, "C" => 30), 
-    Dict("A" => 5, "B" => 10, "C" => 15), 
-    Dict("A" => 5, "B" => 10, "C" => 15), 
+    Dict("A" => 10), 
+    Dict("A" => 5 ), 
+    Dict("A" => 5 ), 
     Set([("A", "G1"), ("B", "G2")]), 
     Dict("T1" => "G1", "T2" => "G2")
 )
@@ -40,10 +41,10 @@ form = ParametrosFormulario(
     Dict("A" => 0.6), 
     Dict("A" => 0.6), 
     Dict("A" => 0.6), 
-    Dict("A" => 10, "B" => 20, "C" => 30), 
-    Dict("A" => 5, "B" => 10, "C" => 15), 
-    Dict("A" => 5, "B" => 10, "C" => 15), 
-    Dict("A" => 5, "B" => 10, "C" => 15)
+    Dict("A" => 10), 
+    Dict("A" => 5), 
+    Dict("A" => 5), 
+    Dict("A" => 5), 
 )
 
 function defineParametrosConvencionados()::ParametrosConvencionados
@@ -105,6 +106,8 @@ function defineParametrosConvencionados()::ParametrosConvencionados
 	chesp_temporario_anual)
 end
 
-# conv = defineParametrosConvencionados()
+conv = defineParametrosConvencionados()
 
 opt = OptimizerOptions(7200.0, 0.6, "alforria.sol", 0, :fobj2)
+
+alforria(conj, sar, form, conv, opt)

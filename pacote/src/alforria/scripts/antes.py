@@ -93,8 +93,12 @@ def antes():
         funcoes_escrita.escreve_dat(professores,turmas,grupos,pre_atribuidas,DATPATH + '.dat')
 
     elif args.tipo == 'jl':
-
+        
         funcoes_escrita.escreve_jl(professores,turmas,grupos,pre_atribuidas,DATPATH + '.jl')
 
     # Estatisticas finais
     check.estatisticas(professores,turmas)
+
+
+if __name__ == '__main__':
+    antes()

@@ -160,7 +160,8 @@ def check_p_c(p, cs, params, verbosity=True):
             if p.impedimentos[h, d] == 1:
                 logger.error(
                     "Professor {0:s} - impedimento no dia e horario ({1:d}, {2:d})".format(
-                    p.nome(), d, h)
+                        p.nome(), d, h
+                    )
                 )
 
                 ok = False
@@ -267,8 +268,12 @@ def check_p(p, params):
                 l_horarios.append((d, h, t.semestralidade))
 
             if p.impedimentos[h, d] == 1:
-                logger.error( "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s.",
-                    p.nome(), d, h, t.id()
+                logger.error(
+                    "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s.",
+                    p.nome(),
+                    d,
+                    h,
+                    t.id(),
                 )
 
                 ok = False
@@ -415,7 +420,10 @@ def checkdata(professores, turmas, pre_atribuidas, S1INI, S2INI, FANTPATH):
             if p.impedimentos[h][d] == 1:
                 logger.warning(
                     "AVISO: %50s no dia e horario (%2d, %2d) com impedimento e disciplina pre-atribuida %12s. O impedimento NÃO será removido.",
-                    p.nome(), d, h, t.id()
+                    p.nome(),
+                    d,
+                    h,
+                    t.id(),
                 )
 
                 # p.impedimentos[h][d]=0
@@ -693,7 +701,6 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                 p.chmax = max(p.chmax, p.chmax2)
 
         else:
-
             difmin = soma + max(4, chminanual - soma)
             # Se ja deu a minima da graduacao, mas ainda nao deu a minima legal e tem desconto, entao o maximo eh o minimo
             if p.pos:
@@ -708,7 +715,7 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma1,
                 )
                 p.chmax1 = soma1
-                if p.pos: 
+                if p.pos:
                     p.chmax = max(chminanual, difmin, soma1)
                 else:
                     p.chmax = max(chmaxanual, soma1)
@@ -722,7 +729,7 @@ def check_ch(professores, turmas, pre_atribuidas, constantes):
                     soma2,
                 )
                 p.chmax2 = soma2
-                if p.pos: 
+                if p.pos:
                     p.chmax = max(chminanual, difmin, soma2)
                 else:
                     p.chmax = max(chmaxanual, soma2)

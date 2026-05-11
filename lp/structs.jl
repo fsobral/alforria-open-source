@@ -11,6 +11,9 @@ struct ConjuntosAlforria
 	P_OUT :: Set{String}
 end
 
+ConjuntosAlforria(P, T, G, G_CANONICOS, T_PRE, P_OUT) =
+    ConjuntosAlforria(P, T, 2:7, 1:16, 1:2, G, 1:3, G_CANONICOS, T_PRE, P_OUT)
+	
 struct ParametrosSAR
 	c   :: Set{Tuple{String, Int64, Int64, Int64}}  # horários das turmas
 	ch  :: Dict{String, Int64}                       # carga horária total

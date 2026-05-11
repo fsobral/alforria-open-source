@@ -384,6 +384,8 @@ def escreve_dat(professores, turmas, grupos, pre_atribuidas, arquivo):
                 f.write(p.id() + " " + str(p.chmax2) + "\n")
         f.write(";\n\nend;\n")
 
+        f.write("set P_OUT :=")
+        f.write(" ;\n\n")
 
 ####################################################################################################################
 ####################                  Funcao              escreve atribuicoes              #########################
@@ -874,3 +876,15 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
                 f.write(f'\t"{p.id()}" => {p.chmax2},\n')
         f.seek(f.tell() - 2, 0)
         f.write("\n)\n\n")
+
+        f.write("conjuntos = ConjuntosAlforria(P, T, 2:7, 1:16, 1:2, G, 1:3, G_CANONICOS, T_PRE, Set{String}())\n")
+
+        f.write("psar = ParametrosSAR(c, ch, ch1, ch2, Set{Tuple{String, String}}(), turma_grupo)\n")
+
+        f.write("pform = ParametrosFormulario(temporario, chprevia1, chprevia2, licenca, pre_atribuida, inapto, pref_grupo, pref_hor, pref_janelas, impedimento, peso_disciplinas, peso_numdisc, peso_cargahor, peso_horario, peso_distintas, peso_manha_noite, peso_janelas, chmax, chmax1, chmax2, Dict())\n")
+
+        f.write("pconf = defineParametrosConvencionados()\n")
+
+        f.write("opt = OptimizerOptions(7200.0, 0.6, \"alforria.sol\", 0, :fobj2)\n")
+
+        
