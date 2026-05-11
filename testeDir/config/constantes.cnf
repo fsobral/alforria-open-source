@@ -1,0 +1,14 @@
+# Parâmetros convencionados (limites de carga horária, etc.)
+# Altere apenas se houver mudança nas normas do departamento.
+
+chmax_efetivo_anual         20
+chmax_efetivo_semestral     12
+chmax_temporario_anual      40
+chmax_temporario_semestral  22
+chmax_diaria                8
+chmin_efetivo_anual         16
+chmin_temporario_anual      24
+chmin_graduacao             8
+numdiscmax_temporario       10
+chesp_efetivo_anual         20
+chesp_temporario_anual      40

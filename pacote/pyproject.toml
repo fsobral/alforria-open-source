@@ -20,7 +20,8 @@ requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-alforria = "alforria.__init__:mainfunc"
+alforria = "alforria.__main__:main"
+alforria_init = "alforria.construtor:criar_projeto"
 verifica_dados = "alforria.scripts.verifica_dados:verifica"
 antes = "alforria.scripts.antes:antes"
 depois = "alforria.scripts.depois:depois"

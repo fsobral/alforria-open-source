@@ -1,0 +1,7 @@
+# Configurações gerais do Alforria.
+
+# Número máximo de impedimentos por professor
+MAXIMPEDIMENTOS 5
+
+# Diretório onde os relatórios serão salvos (com barra no final)
+RELDIR          relatorios/

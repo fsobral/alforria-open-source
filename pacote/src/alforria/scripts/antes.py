@@ -89,7 +89,6 @@ def antes():
 
     # Gera o arquivo .DAT, necessario para o modelo de otimizacao
     if args.tipo == 'mod':
-
         funcoes_escrita.escreve_dat(professores,turmas,grupos,pre_atribuidas,DATPATH + '.dat')
 
     elif args.tipo == 'jl':
