@@ -10,7 +10,7 @@ NOITE_SABADO = 6
 
 
 function setModel(opt)
-	if opt.optmizer == :HiGHS	
+	if opt.optimizer == :HiGHS	
 		mod = Model(HiGHS.Optimizer)
 		set_attribute(mod, "parallel", "on")
 		set_attribute(mod, "presolve", "on")
