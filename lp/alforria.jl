@@ -5,6 +5,10 @@ Pkg.add("JuMP")
 using JuMP, HiGHS
 # using Gurobi
 
+NOTA_MEDIA = 10.0 / 2
+DIAS = 6
+TURNOS = 16
+NOITE_SABADO = 6
 
 function setModel(optimizer, opt)
 	mod = Model(optimizer)
@@ -251,7 +255,7 @@ function parametrosDerivados(
 	ajuste_hor = Dict(p => 
 	begin
 		s = sum(form.pref_hor[p, d, h] for d in conj.D, h in conj.H)
-		s == 0 ? 0 : div(400, s)
+		s == 0 ? 0 : div(NOTA_MEDIA * (DIAS * HORARIOS - NOITE_SABADO), s) # nota média * (dias * horarios - finalSabado)
 	end for p in conj.P)
 	
 	chprevia_total =sum(chprevia_tt[p] for p in conj.P)
