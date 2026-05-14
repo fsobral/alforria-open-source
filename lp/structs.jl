@@ -129,4 +129,5 @@ struct OptimizerOptions
 	solfile :: String	# Caminho do arquivo de solução
 	threads :: Int64	# 0 para usar todos os núcleos disponíveis
 	fobj	:: Symbol	# Tipo de função objetivo
+	optimizer :: Symbol
 end

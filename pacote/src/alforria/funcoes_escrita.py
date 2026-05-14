@@ -885,6 +885,4 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
 
         f.write("pconf = defineParametrosConvencionados()\n")
 
-        f.write("opt = OptimizerOptions(7200.0, 0.6, \"alforria.sol\", 0, :fobj2)\n")
-
-        
+        f.write("opt = OptimizerOptions(7200.0, 0.6, \"alforria.sol\", 0, :fobj2, :Gurobi)\n")

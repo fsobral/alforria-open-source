@@ -10,9 +10,10 @@ DIAS = 6
 TURNOS = 16
 NOITE_SABADO = 6
 
-function setModel(optimizer, opt)
-	mod = Model(optimizer)
-	if optimizer == HiGHS.Optimizer	
+
+function setModel(opt)
+	if opt.optmizer == :HiGHS	
+		mod = Model(HiGHS.Optimizer)
 		set_attribute(mod, "parallel", "on")
 		set_attribute(mod, "presolve", "on")
 		set_attribute(mod, "mip_rel_gap", opt.mip_gap)
@@ -21,8 +22,8 @@ function setModel(optimizer, opt)
 		set_attribute(mod, "write_solution_to_file", true)
 		set_attribute(mod, "mip_heuristic_effort", 1.0)
 
-	elseif optimizer == Gurobi.Optimizer
-	
+	elseif opt.optimizer == :Gurobi 
+		mod = Model(Gurobi.Optimizer)
 		set_attribute(mod, "TimeLimit", opt.cputime)
 		set_attribute(mod, "MIPGap", opt.mip_gap)
 		set_attribute(mod, "ResultFile", opt.solfile)
@@ -594,7 +595,7 @@ function alforria(
 	preencheSAR!(sar, conj)
 	preencheFormulario!(sar, form, conj, conv)
 
-	alforria_mod = setModel(HiGHS.Optimizer, opt)
+	alforria_mod = setModel(opt)
 	
 	deriv = parametrosDerivados(conj, form, sar, conv)
 
