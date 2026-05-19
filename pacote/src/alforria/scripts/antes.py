@@ -38,7 +38,7 @@ def antes():
     logger.setLevel(logging.ERROR)
 
     # Caminho para o arquivo de configuracao dos caminhos de dados
-    PATHS_PATH = '../config/paths.cnf'
+    PATHS_PATH = './config/paths.cnf'
 
     # A partir daqui, mudancas podem ocasionar problemas!
 
@@ -57,7 +57,7 @@ def antes():
     # Carrega o arquivo de configuracoes do programa. Nesse caso pega
     # apenas o numero maximo de impedimentos que estao no programa.
 
-    configuracoes = funcoes_leitura.ler_conf('../config/alforria.cnf')
+    configuracoes = funcoes_leitura.ler_conf('./config/alforria.cnf')
 
     MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
     S1INI = date.fromisoformat(configuracoes['SEM1_INI'])

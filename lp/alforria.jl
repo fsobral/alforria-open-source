@@ -5,7 +5,7 @@ using JuMP, HiGHS, Gurobi
 
 NOTA_MEDIA = 10.0 / 2
 DIAS = 6
-TURNOS = 16
+HORARIOS = 16
 NOITE_SABADO = 6
 
 
@@ -27,6 +27,7 @@ function setModel(opt)
 		set_attribute(mod, "ResultFile", opt.solfile)
 		set_attribute(mod, "Threads", opt.threads)
 	
+			
 	else
 		error("Otimizador não reconhecido. Use 'HiGHS' ou 'Gurobi'.")
 	end

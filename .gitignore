@@ -27,6 +27,8 @@ lp/*.lp
 lp/alforria.mod
 lp/alforria copy*.jl
 
+*dat.jl
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

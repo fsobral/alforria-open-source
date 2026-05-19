@@ -41,7 +41,7 @@ def depois():
 
         logger.setLevel(logging.DEBUG)
 
-    paths = leitura.ler_conf('../config/paths.cnf')
+    paths = leitura.ler_conf('./config/paths.cnf')
 
     GRUPOSPATH = paths['GRUPOSPATH']
     PREFPATH = paths['PREFPATH']
@@ -51,7 +51,7 @@ def depois():
     DAT2PATH = paths['DAT2PATH']
     SOLPATH = paths['SOLPATH']
 
-    configuracoes = leitura.ler_conf('../config/alforria.cnf')
+    configuracoes = leitura.ler_conf('./config/alforria.cnf')
 
     MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
     RELDIR = configuracoes['RELDIR']

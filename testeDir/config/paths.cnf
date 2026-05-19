@@ -1,17 +1,10 @@
-# Caminhos dos arquivos de dados do projeto.
-# Edite os valores conforme a localização real de cada arquivo.
 
-# Arquivo CSV com os grupos de disciplinas
-GRUPOSPATH      dados/grupos.csv
-
-# Arquivo de preferências dos professores (CSV)
-PREFPATH        dados/preferencias.csv
-
-# Arquivo SAR em CSV
-SARPATH         dados/sar.csv
-
-# Arquivo de turmas fantasmas (TSV)
-FANTPATH        dados/fantasmas.tsv
-
-# Arquivo de disciplinas pré-atribuídas (CSV)
-ATRIBPATH       dados/pre_atribuidas.csv
+GRUPOSPATH ./dados/grupos.txt
+PREFPATH ./dados/preferencias.tsv
+SARPATH ./dados/ensalamento.csv
+CURSOSPATH ./dados/sar097.txt
+ATRIBPATH ./dados/pre_atribuidas.tsv
+FANTPATH ./dados/fantasmas.csv
+DATPATH ./dados/alforria.dat
+DAT2PATH ./lp/alforria2.dat
+SOLPATH ./lp/alforria.sol

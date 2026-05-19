@@ -5,3 +5,7 @@ MAXIMPEDIMENTOS 5
 
 # Diretório onde os relatórios serão salvos (com barra no final)
 RELDIR          relatorios/
+
+
+SEM1_INI 2026-03-31
+SEM2_INI 2026-08-18
