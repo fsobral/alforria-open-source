@@ -649,32 +649,32 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.write("G :: Set{String} = Set{String}([\n\n")
         for g in grupos:
             f.write(f'\t"{g.id}",\n')
-        f.seek(f.tell() - 2, 0)
+ 
         f.write("\n])\n\n")
 
         f.write("G_CANONICOS :: Set{String} = Set{String}([")
         for g in grupos:
             if g.canonico:
                 f.write(f'\t"{g.id}",\n')
-        f.seek(f.tell() - 2, 0)
+ 
         f.write("\n])\n\n")
 
         f.write("T :: Set{String} = Set{String}([")
         for t in turmas:
             f.write(f'\t"{t.id()}",\n')
-        f.seek(f.tell() - 2, 0)
+ 
         f.write("\n])\n\n")
 
         f.write("T_PRE :: Set{String} = Set{String}([")
         for p, t in pre_atribuidas:
             f.write(f'\t"{t.id()}",\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("P :: Set{String} = Set{String}([")
         for p in professores:
             f.write(f'\t"{p.id()}",\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         # Vincula as turmas ao grupos
@@ -682,7 +682,7 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         for t in turmas:
             if t.grupo is not None:
                 f.write(f'\t"{t.id()}" => "{t.grupo.id}",\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         # Supoe que se uma disciplina eh vinculada, seu vinculo eh a
@@ -698,7 +698,7 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
             elif t.vinculada:
                 f.write(f'\t("{t.id()}", ')
                 vinc = True
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("c :: Set{Tuple{String, Int64, Int64, Int64}} =\n")
@@ -706,13 +706,13 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         for t in turmas:
             for d, h in t.horarios:
                 f.write(f'\t("{t.id()}", {t.semestralidade}, {d}, {h}),\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("ch :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for t in turmas:
             f.write(f'\t"{t.id()}" => {t.carga_horaria()},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("ch1 :: Dict{String, Int64} = Dict{String, Int64}(\n")
@@ -722,7 +722,7 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
                 f.write(f"{t.carga_horaria()},\n")
             else:
                 f.write("0,\n")
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("ch2 :: Dict{String, Int64} = Dict{String, Int64}(\n")
@@ -732,14 +732,14 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
                 f.write(f"{t.carga_horaria()},\n")
             else:
                 f.write("0,\n")
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("temporario :: Set{String} = Set{String}([\n")
         for p in professores:
             if p.temporario:
                 f.write(f'\t"{p.id()}",\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("inapto :: Set{Tuple{String, String}} = Set{Tuple{String, String}}([\n")
@@ -764,7 +764,7 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         for p in professores:
             if p.pref_janelas:
                 f.write(f'\t"{p.id()}",\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("pref_grupo :: Dict{Tuple{String, String}, Float64} =\n")
@@ -772,7 +772,7 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         for p in professores:
             for g in p.pref_grupos.keys():
                 f.write(f'\t("{p.id()}", "{g}") => {p.pref_grupos[g]},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("pref_hor :: Dict{Tuple{String, Int64, Int64}, Float64} =\n")
@@ -781,28 +781,28 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
             for d in range(2, 8):
                 for h in range(1, 17):
                     f.write(f'\t("{p.id()}", {d}, {h}) => {p.pref_horarios[h, d]},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("pre_atribuida :: Set{Tuple{String, String}} =\n")
         f.write("Set{Tuple{String, String}}([\n")
         for p, t in pre_atribuidas:
             f.write(f'\t("{p.id()}", "{t.id()}"),\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n])\n\n")
 
         f.write("chprevia1 :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for p in professores:
             if p.chprevia1 > 0:
                 f.write(f'\t"{p.id()}" => {p.chprevia1},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("chprevia2 :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for p in professores:
             if p.chprevia2 > 0:
                 f.write(f'\t"{p.id()}" => {p.chprevia2},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("licenca :: Set{Tuple{String, Int64}} = Set{Tuple{String, Int64}}([\n")
@@ -817,64 +817,64 @@ def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
         f.write("peso_disciplinas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_disciplinas},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_horario  :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_horario},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_cargahor :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_cargahor},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_distintas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_distintas},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_janelas :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_janelas},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_numdisc :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_numdisc},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("peso_manha_noite :: Dict{String, Float64} = Dict{String, Float64}(\n")
         for p in professores:
             f.write(f'\t"{p.id()}" => {p.peso_manha_noite},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("chmax :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for p in professores:
             if p.chmax != None:
                 f.write(f'\t"{p.id()}" => {p.chmax},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("chmax1 :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for p in professores:
             if p.chmax1 != None:
                 f.write(f'\t"{p.id()}" => {p.chmax1},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("chmax2 :: Dict{String, Int64} = Dict{String, Int64}(\n")
         for p in professores:
             if p.chmax2 != None:
                 f.write(f'\t"{p.id()}" => {p.chmax2},\n')
-        f.seek(f.tell() - 2, 0)
+
         f.write("\n)\n\n")
 
         f.write("conjuntos = ConjuntosAlforria(P, T, 2:7, 1:16, 1:2, G, 1:3, G_CANONICOS, T_PRE, Set{String}())\n")
