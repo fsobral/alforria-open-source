@@ -1,6 +1,4 @@
-using Pkg
 
-Pkg.activate(".")
 using JuMP, HiGHS, Gurobi
 
 NOTA_MEDIA = 10.0 / 2

@@ -21,8 +21,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 alforria = "alforria.__main__:main"
-alforria_init = "alforria.construtor:criar_projeto"
+alforria_init = "alforria.construtor:main"
 verifica_dados = "alforria.scripts.verifica_dados:verifica"
 antes = "alforria.scripts.antes:antes"
 depois = "alforria.scripts.depois:depois"
 sar_to_csv = "alforria.scripts.sar_to_csv:sar_to_csv"
+solve = "alforria.scripts.solve:solve"
