@@ -1,0 +1,35 @@
+[path]
+root = "."
+relatorio = "./relatorios/"
+GRUPOSPATH = "./dados/grupos.txt"
+PREFPATH = "./dados/preferencias.tsv"
+SARPATH  = "./dados/ensalamento.csv"
+cursos = "./dados/sar097.txt"
+ATRIBPATH = "./dados/pre_atribuidas.tsv"
+FANTPATH = "./dados/fantasmas.csv"
+DATPATH = "./dados/alforria.dat"
+dat2 = "./lp/alforria2.dat"
+SOLPATH = "./lp/alforria.sol"
+
+# configurações do programa
+[alforria]
+# Numero maximo de impedimentos no formulario
+MAXIMPEDIMENTOS =  5
+
+# Início e fim do semestre AAAA-MM-DD
+SEM1_INI = 2025-03-31
+SEM2_INI = 2025-08-18
+
+reldir = "./relatorios/"
+
+[constantes]
+chmax_efetivo_anual = 18
+chmax_efetivo_semestral = 12
+chmax_temporario_anual = 38
+chmax_temporario_semestral = 20
+chmin_efetivo_anual = 16
+chmin_temporario_anual = 36
+chmin_graduacao = 8
+
+chesp_efetivo_anual =  18
+chesp_temporario_anual = 36
