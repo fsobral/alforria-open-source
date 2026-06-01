@@ -53,7 +53,8 @@ l_turm = []
 
 for d in args.dir:
 
-    paths = leitura.ler_conf(d)
+    conf = leitura.ler_conf()
+    paths = conf['path']
 
     GRUPOSPATH = paths['GRUPOSPATH']
     PREFPATH = paths['PREFPATH']
@@ -63,7 +64,7 @@ for d in args.dir:
     DATPATH = paths['DATPATH']
     SOLPATH = paths['SOLPATH']
 
-    configuracoes = leitura.ler_conf('../config/alforria.cnf')
+    configuracoes = conf['alforria']
 
     MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
     RELDIR = configuracoes['RELDIR']

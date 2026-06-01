@@ -1,11 +1,12 @@
 # coding=utf8
-
+import tomllib
 import logging
 import re
 from datetime import date
 
 import numpy
 import pandas as pd
+from typing import TypedDict
 
 from . import classes, funcoes_gerais
 
@@ -1011,27 +1012,17 @@ def ler_pre_atribuidas(arquivo, arquivo_de_fantasmas, professores, turmas):
 #########################################                LER AQUIVO DE CONFIGURACAO         ################################
 ############################################################################################################################
 
+class TomlConfig(TypedDict):
+    path: dict
+    alforria: dict
+    constantes: dict
 
-def ler_conf(arquivo):
+def ler_conf(fileName = "config.toml") -> TomlConfig:
     """
     Le o arquivo de configuracao e devolve um mapa {PARAMETRO:VALOR}com os parametros lidos
     """
 
-    param = {}
-    linha = 1
+    with open(fileName, "rb") as f:
+        config = tomllib.load(f)
 
-    with open(arquivo, "r") as f:
-        for l in f:
-            if l.isspace() or l.startswith("#"):
-                continue
-
-            tokens = l.split()
-
-            if len(tokens) == 2:
-                param[tokens[0]] = tokens[1]
-            else:
-                print("\nLER_CONF.PY Erro na linha " + str(linha) + "\n")
-
-            linha += 1
-
-    return param
+    return config

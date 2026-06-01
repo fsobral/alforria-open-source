@@ -38,7 +38,7 @@ def sar_to_csv():
 
         logger.setLevel(logging.DEBUG)
 
-    paths = leitura.ler_conf('../config/paths.cnf')
+    paths = leitura.ler_conf()['path']
 
     SARPATH = paths['SARPATH'] if args.i == None else args.i
     GRUPOSPATH = paths['GRUPOSPATH']

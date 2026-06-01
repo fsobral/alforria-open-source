@@ -159,7 +159,7 @@ def cria_relatorio_geral(professores, diretorio):
 
 def escreve_dat(professores, turmas, grupos, pre_atribuidas, arquivo):
     with open(arquivo, "w") as f:
-        constantes = leitura.ler_conf("../config/constantes.cnf")
+        constantes = leitura.ler_conf()["constantes"]
 
         for param in constantes:
             f.write("param " + param + " := " + constantes[param] + ";\n\n")
@@ -641,10 +641,10 @@ def atualiza_jl(professores, arquivo):
 
 def escreve_jl(professores, turmas, grupos, pre_atribuidas, arquivo):
     with open(arquivo, "w") as f:
-        constantes = leitura.ler_conf("../config/constantes.cnf")
-
+        constantes = leitura.ler_conf()["constantes"]
+    
         for param in constantes:
-            f.write(param + " = " + constantes[param] + "\n\n")
+            f.write(f"param = {constantes[param]}\n\n")
 
         f.write("G :: Set{String} = Set{String}([\n\n")
         for g in grupos:

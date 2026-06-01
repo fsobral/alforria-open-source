@@ -37,15 +37,14 @@ def antes():
 
     logger.setLevel(logging.ERROR)
 
-    # Caminho para o arquivo de configuracao dos caminhos de dados
-    PATHS_PATH = './config/paths.cnf'
-
     # A partir daqui, mudancas podem ocasionar problemas!
 
     # Le os caminhos onde se encontram os arquivos de dados
 
-    paths = funcoes_leitura.ler_conf(PATHS_PATH)
+    conf = funcoes_leitura.ler_conf()
 
+    paths = conf['path']
+    
     GRUPOSPATH = paths['GRUPOSPATH']
     PREFPATH = paths['PREFPATH']
     SARPATH = paths['SARPATH']
@@ -57,11 +56,10 @@ def antes():
     # Carrega o arquivo de configuracoes do programa. Nesse caso pega
     # apenas o numero maximo de impedimentos que estao no programa.
 
-    configuracoes = funcoes_leitura.ler_conf('./config/alforria.cnf')
-
-    MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
-    S1INI = date.fromisoformat(configuracoes['SEM1_INI'])
-    S2INI = date.fromisoformat(configuracoes['SEM2_INI'])
+    configuracoes = conf['alforria']
+    MAXIMPEDIMENTOS = configuracoes['MAXIMPEDIMENTOS']
+    S1INI = configuracoes['SEM1_INI']
+    S2INI = configuracoes['SEM2_INI']
 
     # Carrega os grupos de disciplinas
     grupos = funcoes_leitura.ler_grupos(GRUPOSPATH)

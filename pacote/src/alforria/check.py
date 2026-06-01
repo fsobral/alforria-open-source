@@ -389,8 +389,8 @@ def ler_fantasmas(arquivo):
 def checkdata(professores, turmas, pre_atribuidas, S1INI, S2INI, FANTPATH):
     logger = logging.getLogger("alforria")
 
-    constantes = funcoes_leitura.ler_conf("../config/constantes.cnf")
-
+    constantes = funcoes_leitura.ler_conf()['constantes']
+    
     fantasmas = ler_fantasmas(FANTPATH)
 
     # Verifica pre-atribuidas duplicadas

@@ -9,9 +9,7 @@ from . import check
 from . import funcoes_escrita as escrita
 from . import funcoes_leitura as leitura
 
-_PATHS_PATH = "../config/paths.cnf"
-_ALFCFG_PATH = "../config/alforria.cnf"
-_CONST_PATH = "../config/constantes.cnf"
+_CONFIG_PATH = "./config.toml"
 
 _alforria_completer = WordCompleter(
     [
@@ -67,10 +65,8 @@ inversas = {}
 
 
 def set_config_path(path: str):
-    global _PATHS_PATH, _ALFCFG_PATH, _CONST_PATH
-    _PATHS_PATH = path + "/paths.cnf"
-    _ALFCFG_PATH = path + "/alforria.cnf"
-    _CONST_PATH = path + "/constantes.cnf"
+    global _CONFIG_PATH
+    _CONFIG_PATH = path + "/config.toml"
 
 
 def rastreavel(funcao):
@@ -230,10 +226,10 @@ def _report_(*args):
     import matplotlib.pyplot as plt
     import numpy as np
 
-    global _CONST_PATH
+    global _CONFIG_PATH
     global professores, grupos, turmas
 
-    params = leitura.ler_conf(_CONST_PATH)
+    params = leitura.ler_conf(_CONFIG_PATH)["constantes"]
 
     if len(args) == 0:
         logger.error("Uso: report [imp|t|g|ch]")
@@ -344,13 +340,15 @@ def _load_():
 
     """
 
-    global _PATHS_PATH, _ALFCFG_PATH
+    global _CONFIG_PATH
     global professores, grupos, turmas, pre_atribuidas
     global _professor_search_name, _course_search_id, _course_professor_search
 
-    paths = leitura.ler_conf(_PATHS_PATH)
-    configuracoes = leitura.ler_conf(_ALFCFG_PATH)
+    conf = leitura.ler_conf(_CONFIG_PATH)
 
+    paths = conf['path']
+    configuracoes = conf['alforria']
+    
     # Carrega os grupos de disciplinas
     grupos = leitura.ler_grupos(paths["GRUPOSPATH"])
 
@@ -715,10 +713,10 @@ def _save_csv_(*args):
     This function saves the relations professors and classes.
     """
 
-    global _ALFCFG_PATH
+    global _CONFIG_PATH
     global professores, turmas
 
-    configuracoes = leitura.ler_conf(_ALFCFG_PATH)
+    configuracoes = leitura.ler_conf(_CONFIG_PATH)["alforria"]
 
     fname = configuracoes["RELDIR"] + "/atribuicoes.csv"
 
@@ -732,11 +730,11 @@ def _save_csv_(*args):
 
 
 def _to_pdf_():
-    global _ALFCFG_PATH
+    global _CONFIG_PATH
     global professores, turmas
 
     if professores is not None:
-        configuracoes = leitura.ler_conf(_ALFCFG_PATH)
+        configuracoes = leitura.ler_conf(_CONFIG_PATH)["path"]
 
         prof_ord = sorted(professores, key=lambda x: x.nome())
 
@@ -761,9 +759,9 @@ def _to_pdf_():
 
 
 def _check_(*args):
-    global _CONST_PATH, professores, _professor_search_name, _course_search_id
+    global _CONFIG_PATH, professores, _professor_search_name, _course_search_id
 
-    constantes = leitura.ler_conf(_CONST_PATH)
+    constantes = leitura.ler_conf(_CONFIG_PATH)["constantes"]
 
     if professores is None:
         print("Necessary to load data first.")
@@ -832,7 +830,7 @@ def _find_(*args):
 
         return
 
-    constantes = leitura.ler_conf(_CONST_PATH)
+    constantes = leitura.ler_conf(_CONFIG_PATH)["constantes"]
 
     t = _course_search_id[name]
 
@@ -863,8 +861,7 @@ def parse_command(command):
 
     """
 
-    global _PATHS_PATH
-    global _ALFCFG_PATH
+    global _CONFIG_PATH
     global professores
 
     cmds = command.split()
@@ -879,11 +876,11 @@ def parse_command(command):
             else:
                 print("Usage: %s log_level" % cmds[0])
 
-        elif cmds[0] == "set_paths":
-            _PATHS_PATH = cmds[1]
+        # elif cmds[0] == "set_paths":
+        #     _PATHS_PATH = cmds[1]
 
         elif cmds[0] == "set_config":
-            _ALFCFG_PATH = cmds[1]
+            _CONFIG_PATH = cmds[1]
 
         elif cmds[0] == "attribute":
             _attribute_(*cmds[1:])

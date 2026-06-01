@@ -53,7 +53,11 @@ def verifica():
 
     # Le os caminhos onde se encontram os arquivos de dados
 
-    paths = leitura.ler_conf('../config/paths.cnf')
+    conf = leitura.ler_conf()
+
+    paths = conf['path']
+    configuracoes = conf['alforria']
+    
 
     GRUPOSPATH = paths['GRUPOSPATH']
     PREFPATH = paths['PREFPATH']
@@ -66,8 +70,6 @@ def verifica():
     # Carrega o arquivo de configuracoes do programa. Nesse caso pega o
     # numero maximo de impedimentos que estao no programa e o nome do
     # diretorio de criacao dos relatorios.
-
-    configuracoes = leitura.ler_conf('../config/alforria.cnf')
 
     MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
     RELDIR = configuracoes['RELDIR']

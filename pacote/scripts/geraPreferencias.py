@@ -12,7 +12,10 @@ import funcoes_leitura as leitura
 import funcoes_escrita as escrita
 import check
 
-paths = leitura.ler_conf('../config/paths.cnf')
+
+conf = leitura.ler_conf()
+
+paths = conf['path']
 
 GRUPOSPATH = paths['GRUPOSPATH']
 PREFPATH = paths['PREFPATH']
@@ -20,7 +23,7 @@ SARPATH = paths['SARPATH']
 ATRIBPATH = paths['ATRIBPATH']
 FANTPATH = paths['FANTPATH']
 
-configuracoes = leitura.ler_conf('../config/alforria.cnf')
+configuracoes = conf['alforria']
 
 MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
 RELDIR = configuracoes['RELDIR']

@@ -2,7 +2,8 @@
 construtor.py — Cria a estrutura de diretórios e arquivos de configuração
 de um projeto Alforria caso ainda não existam.
 """
-
+import argparse
+import sys
 import os
 from pathlib import Path
 
@@ -11,51 +12,42 @@ from pathlib import Path
 # Conteúdo padrão dos arquivos de configuração
 # ---------------------------------------------------------------------------
 
-_PATHS_CNF = """\
-# Caminhos dos arquivos de dados do projeto.
-# Edite os valores conforme a localização real de cada arquivo.
+_CONF = """\
+[path]
+root = "."
+relatorio = "./relatorios/"
+GRUPOSPATH = "./dados/grupos.txt"
+PREFPATH = "./dados/preferencias.tsv"
+SARPATH  = "./dados/ensalamento.csv"
+cursos = "./dados/sar097.txt"
+ATRIBPATH = "./dados/pre_atribuidas.tsv"
+FANTPATH = "./dados/fantasmas.csv"
+DATPATH = "./dados/alforria.dat"
+dat2 = "./lp/alforria2.dat"
+SOLPATH = "./lp/alforria.sol"
 
-# Arquivo CSV com os grupos de disciplinas
-GRUPOSPATH      dados/grupos.csv
+# configurações do programa
+[alforria]
+# Numero maximo de impedimentos no formulario
+MAXIMPEDIMENTOS =  5
 
-# Arquivo de preferências dos professores (CSV)
-PREFPATH        dados/preferencias.csv
+# Início e fim do semestre AAAA-MM-DD
+SEM1_INI = 2025-03-31
+SEM2_INI = 2025-08-18
 
-# Arquivo SAR em CSV
-SARPATH         dados/sar.csv
+reldir = "./relatorios/"
 
-# Arquivo de turmas fantasmas (TSV)
-FANTPATH        dados/fantasmas.tsv
+[constantes]
+chmax_efetivo_anual = 18
+chmax_efetivo_semestral = 12
+chmax_temporario_anual = 38
+chmax_temporario_semestral = 20
+chmin_efetivo_anual = 16
+chmin_temporario_anual = 36
+chmin_graduacao = 8
 
-# Arquivo de disciplinas pré-atribuídas (CSV)
-ATRIBPATH       dados/pre_atribuidas.csv
-"""
-
-_ALFCFG_CNF = """\
-# Configurações gerais do Alforria.
-
-# Número máximo de impedimentos por professor
-MAXIMPEDIMENTOS 5
-
-# Diretório onde os relatórios serão salvos (com barra no final)
-RELDIR          relatorios/
-"""
-
-_CONSTANTES_CNF = """\
-# Parâmetros convencionados (limites de carga horária, etc.)
-# Altere apenas se houver mudança nas normas do departamento.
-
-chmax_efetivo_anual         20
-chmax_efetivo_semestral     12
-chmax_temporario_anual      40
-chmax_temporario_semestral  22
-chmax_diaria                8
-chmin_efetivo_anual         16
-chmin_temporario_anual      24
-chmin_graduacao             8
-numdiscmax_temporario       10
-chesp_efetivo_anual         20
-chesp_temporario_anual      40
+chesp_efetivo_anual =  18
+chesp_temporario_anual = 36
 """
 
 _GITIGNORE = """\
@@ -70,35 +62,6 @@ relatorios/
 __pycache__/
 *.pyc
 """
-
-_README = """\
-# Projeto Alforria
-
-Estrutura criada automaticamente pelo comando `alforria init`.
-
-## Diretórios
-
-| Diretório    | Descrição                                              |
-|--------------|--------------------------------------------------------|
-| `config/`    | Arquivos de configuração do projeto                    |
-| `dados/`     | Arquivos de entrada (SAR, preferências, grupos, etc.)  |
-| `relatorios/`| Saída gerada pelo Alforria (relatórios, CSV)           |
-
-## Primeiros passos
-
-1. Coloque os arquivos de dados em `dados/` conforme os caminhos em
-   `config/paths.cnf`.
-2. Ajuste `config/alforria.cnf` e `config/constantes.cnf` se necessário.
-3. No diretório raiz do projeto, execute:
-
-```
-alforria
-```
-
-Dentro do shell interativo, use `load` para carregar os dados e `help` para
-listar os comandos disponíveis.
-"""
-
 
 # ---------------------------------------------------------------------------
 # Função principal
@@ -116,18 +79,14 @@ def criar_projeto(nome_projeto: str = ".") -> None:
 
     # Diretórios a criar
     diretorios = [
-        raiz / "config",
         raiz / "dados",
         raiz / "relatorios",
     ]
 
     # Arquivos a criar: (caminho, conteúdo)
     arquivos = [
-        (raiz / "config" / "paths.cnf",      _PATHS_CNF),
-        (raiz / "config" / "alforria.cnf",   _ALFCFG_CNF),
-        (raiz / "config" / "constantes.cnf", _CONSTANTES_CNF),
+        (raiz / "config.toml",      _CONF),
         (raiz / ".gitignore",                _GITIGNORE),
-        (raiz / "README.md",                 _README),
     ]
 
     criados = []
@@ -167,3 +126,13 @@ def criar_projeto(nome_projeto: str = ".") -> None:
 
     if not criados:
         print("\nNenhuma alteração necessária — projeto já estava configurado.")
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(prog="alforria_init", description="Cria projeto Alforria")
+    parser.add_argument("nome_projeto", nargs="?", default=".")
+    args = parser.parse_args(argv)
+    criar_projeto(args.nome_projeto)
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
