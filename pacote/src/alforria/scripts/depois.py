@@ -56,8 +56,8 @@ def depois():
     configuracoes = conf['alforria']
     MAXIMPEDIMENTOS = int(configuracoes['MAXIMPEDIMENTOS'])
     RELDIR = configuracoes['RELDIR']
-    S1INI = date.fromisoformat(configuracoes['SEM1_INI'])
-    S2INI = date.fromisoformat(configuracoes['SEM2_INI'])
+    S1INI = configuracoes['SEM1_INI']
+    S2INI = configuracoes['SEM2_INI']
 
     grupos = leitura.ler_grupos(GRUPOSPATH)
 

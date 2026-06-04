@@ -8,19 +8,19 @@ cursos = "./dados/sar097.txt"
 ATRIBPATH = "./dados/pre_atribuidas.tsv"
 FANTPATH = "./dados/fantasmas.csv"
 DATPATH = "./dados/alforria.dat"
-dat2 = "./lp/alforria2.dat"
-SOLPATH = "./lp/alforria.sol"
-
+DAT2PATH = "./dados/alforria2.dat"
+SOLPATH = "./alforria.sol"
+BASE_TEX_PATH = "./dados/base.tex"
 # configurações do programa
 [alforria]
 # Numero maximo de impedimentos no formulario
 MAXIMPEDIMENTOS =  5
 
 # Início e fim do semestre AAAA-MM-DD
-SEM1_INI = 2025-03-31
-SEM2_INI = 2025-08-18
+SEM1_INI = 2026-03-09
+SEM2_INI = 2026-08-04
 
-reldir = "./relatorios/"
+RELDIR = "./relatorios/"
 
 [constantes]
 chmax_efetivo_anual = 18

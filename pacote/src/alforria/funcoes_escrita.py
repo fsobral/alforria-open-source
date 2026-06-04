@@ -136,13 +136,14 @@ def cria_relatorio_geral(professores, diretorio):
     com todos os relatorios. Utiliza um arquivo chamado 'base.tex' como base
     para carregar os pacotes e similares.
     """
-
+    path = leitura.ler_conf()["path"]
+    
     if not os.path.exists(diretorio):
         os.makedirs(diretorio)
 
     count = 1
-    with open("../config/base.tex", "r") as padrao:
-        with open(diretorio + "relatorio_geral.tex", "w") as saida:
+    with open(path["BASE_TEX_PATH"], "r") as padrao:
+        with open(diretorio + "relatoriogeral.tex", "w") as saida:
             for l in padrao:
                 saida.write(l)
             for p in professores:

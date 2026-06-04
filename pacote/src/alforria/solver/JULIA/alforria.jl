@@ -1,7 +1,7 @@
 
 using JuMP, HiGHS, Gurobi
 
-NOTA_MEDIA = 10.0 / 2
+NOTA_INSATISFACAO = 10.0
 DIAS = 6
 HORARIOS = 16
 NOITE_SABADO = 6
@@ -253,9 +253,10 @@ function parametrosDerivados(
 	ajuste_hor = Dict(p => 
 	begin
 		s = sum(form.pref_hor[p, d, h] for d in conj.D, h in conj.H)
-		s == 0 ? 0 : div(NOTA_MEDIA * (DIAS * HORARIOS - NOITE_SABADO), s) # nota média * (dias * horarios - finalSabado)
+		s == 0 ? 0 : div(NOTA_INSATISFACAO * (DIAS * HORARIOS - NOITE_SABADO) * (2/3), s) # nota média * (dias * horarios - finalSabado)
 	end for p in conj.P)
-	
+	# a ideia é penalizar o professor que está insatisfeito em mais de 2/3 do horário semanal
+
 	chprevia_total =sum(chprevia_tt[p] for p in conj.P)
 
 	chesp = Dict(p => p in form.temporario ?
@@ -511,7 +512,7 @@ function defineRestricoesVariaveis!(mod::Model,
 	conv.numdisc.customarginal[p in form.temporario] * ((sum(var.x[p, t] for t in conj.T) + (deriv.chprevia_tt[p] / 6) - 2 * conv.numdisc.paraiso[p in form.temporario])))
 
 	@constraint(mod, def_insat_horario[p in conj.P], insat_horario[p] ==
-	deriv.ajuste_hor[p] * (1 / deriv.chesp[p]) * sum(((t,s,d,h) in sar.c)*form.pref_hor[p,d,h]*var.x[p,t] for t in conj.T, s in conj.S, d in conj.D, h in conj.H))
+	(1 / deriv.chesp[p]) * sum(((t,s,d,h) in sar.c)*form.pref_hor[p,d,h]*var.x[p,t] for t in conj.T, s in conj.S, d in conj.D, h in conj.H))
 
 	@constraint(mod, def_insat_distintas[p in conj.P], insat_distintas[p] ==
 	conv.distintas.customarginal[p in form.temporario] * ((sum(var.lec_grp[p,g,s] for g in conj.G, s in conj.S) + (deriv.chprevia_tt[p]/6))-2*conv.distintas.paraiso[p in form.temporario]))

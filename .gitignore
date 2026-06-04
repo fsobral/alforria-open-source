@@ -63,3 +63,5 @@ dados/relatorio_geral.pdf
 .pypirc
 
 pacote_teste/
+
+config/

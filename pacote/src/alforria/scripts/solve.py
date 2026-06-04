@@ -10,13 +10,15 @@ def solve():
     julia_path = project_root / ".." / "solver" / "JULIA"
     dat_path = Path(os.getcwd()) / Path(conf["path"]["DATPATH"] + ".jl")
  
-    # if (not (julia_path / "Manifest.toml").exists()) or (not (julia_path / "Project.toml").exists()):
-    #     subprocess.run(
-    #         ["julia", str(julia_path / "scripts" / "setup_env.jl")], check=True
-    #     )
+    print(julia_path)
+
+    if (not (julia_path / "Manifest.toml").exists()) or (not (julia_path / "Project.toml").exists()):
+        subprocess.run(
+            ["julia", str(julia_path / "scripts" / "setup_env.jl"), str(julia_path)], check=True
+        )
 
     subprocess.run(
-        ["julia", str(julia_path / "scripts" / "run.jl") , str(julia_path), str(dat_path)]
+        ["julia", "-i", str(julia_path / "scripts" / "run.jl") , str(julia_path), str(dat_path)]
     )
 
 if __name__ == "__main__":
