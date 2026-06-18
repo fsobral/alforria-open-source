@@ -1016,7 +1016,8 @@ class TomlConfig(TypedDict):
     path: dict
     alforria: dict
     constantes: dict
-
+    julia: dict
+    
 def ler_conf(fileName = "config.toml") -> TomlConfig:
     """
     Le o arquivo de configuracao e devolve um mapa {PARAMETRO:VALOR}com os parametros lidos
