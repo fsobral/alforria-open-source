@@ -35,7 +35,7 @@ MAXIMPEDIMENTOS =  5
 SEM1_INI = 2025-03-31
 SEM2_INI = 2025-08-18
 
-reldir = "./relatorios/"
+RELDIR = "./relatorios/"
 
 [constantes]
 chmax_efetivo_anual = 18
@@ -63,6 +63,13 @@ __pycache__/
 *.pyc
 """
 
+_JULIA_PROJECT_TOML = """\
+[deps]
+Gurobi = "2e9cd046-0924-5485-92f1-d5272153d98b"
+HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
+JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
+"""
+
 # ---------------------------------------------------------------------------
 # Função principal
 # ---------------------------------------------------------------------------
@@ -87,6 +94,7 @@ def criar_projeto(nome_projeto: str = ".") -> None:
     arquivos = [
         (raiz / "config.toml",      _CONF),
         (raiz / ".gitignore",                _GITIGNORE),
+        (raiz / "Project.toml",     _JULIA_PROJECT_TOML)
     ]
 
     criados = []
