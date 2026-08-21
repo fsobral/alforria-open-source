@@ -17,8 +17,8 @@ class GrupoORM(Base):
 class ProfessorORM(Base):
     __tablename__ = "professor"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    nome: Mapped[str] = mapped_column(String)
+    matricula: Mapped[str] = mapped_column(String, primary_key=True)
+    nome_completo: Mapped[str] = mapped_column(String)
     temporario: Mapped[bool] = mapped_column(Boolean, default=False)
 
     turmas: Mapped[list["TurmaORM"]] = relationship(
@@ -33,8 +33,8 @@ class TurmaORM(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     codigo: Mapped[str] = mapped_column(String)
     grupo: Mapped[str] = mapped_column(String, nullable=True)
-    professor_id: Mapped[str | None] = mapped_column(
-        ForeignKey("professor.id"), nullable=True
+    professor_matricula: Mapped[str | None] = mapped_column(
+        ForeignKey("professor.matricula"), nullable=True
     )
 
     professor: Mapped["ProfessorORM | None"] = relationship(

@@ -2,9 +2,9 @@ import numpy
 
 
 class Professor:
-    def __init__(self):
-        self.nome_completo = None
-        self.matricula = None
+    def __init__(self, *, matricula: str, nome_completo: str, temporario: bool = False):
+        self.matricula = matricula  # id único do professor (chave primária)
+        self.nome_completo = nome_completo
         self.email = None
         self.tel = None
         self.chprevia1 = 0.0
