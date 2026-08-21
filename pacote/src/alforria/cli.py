@@ -1,6 +1,4 @@
 import logging
-import re
-import sys
 
 from prompt_toolkit import PromptSession
 from prompt_toolkit.completion import WordCompleter, merge_completers
@@ -58,57 +56,10 @@ _course_professor_search = dict()
 
 _hd_course_search = dict()
 
-history = []
-future = []
-
-inversas = {}
-
 
 def set_config_path(path: str):
     global _CONFIG_PATH
     _CONFIG_PATH = path + "/config.toml"
-
-
-def rastreavel(funcao):
-    def interna(*args, **kargs):
-        future.clear()
-        history.append(
-            {
-                "undo": lambda: inversas[funcao](*args, **kargs),
-                "redo": lambda: funcao(*args, **kargs),
-            }
-        )
-        return funcao(*args, **kargs)
-
-    return interna
-
-
-def inversa_de(funcao):
-    def interna(funcao_inversa):
-        inversas[funcao] = funcao_inversa
-        return funcao_inversa
-
-    return interna
-
-
-def _undo_():
-    if len(history) == 0:
-        print("tem nada")
-        return
-
-    operacao = history.pop()
-    future.append(operacao)
-    return operacao["undo"]()
-
-
-def _redo_():
-    if len(future) == 0:
-        print("tem nada")
-        return
-
-    operacao = future.pop()
-    history.append(operacao)
-    return operacao["redo"]()
 
 
 def __gen_stats__(params):
@@ -346,9 +297,9 @@ def _load_():
 
     conf = leitura.ler_conf(_CONFIG_PATH)
 
-    paths = conf['path']
-    configuracoes = conf['alforria']
-    
+    paths = conf["path"]
+    configuracoes = conf["alforria"]
+
     # Carrega os grupos de disciplinas
     grupos = leitura.ler_grupos(paths["GRUPOSPATH"])
 
@@ -456,12 +407,12 @@ def _move_to_(*args):
 
     # Check if both professors exist
     if args[0] not in _professor_search_name:
-        logger.error("Nao encontrado docente: %s" % args[0])
+        logger.error(f"Nao encontrado docente: {args[0]}")
 
         return
 
     if args[1] not in _professor_search_name:
-        logger.error("Nao encontrado docente: %s" % args[1])
+        logger.error(f"Nao encontrado docente: {args[1]}")
 
         return
 
@@ -479,8 +430,7 @@ def _move_to_(*args):
     for t in tlist:
         if t.professor is not p_from:
             logger.error(
-                "Professor %s nao ministra turma %s. Nao ira mover disciplina alguma."
-                % (p_from.nome(), t.id())
+                f"Professor {p_from.nome()} nao ministra turma {t.id}. Nao ira mover disciplina alguma."
             )
 
             return
@@ -536,7 +486,7 @@ def _attribute_t_to_p(t, p):
 
     if t.professor is not None:
         if t.professor != p:
-            logger.error("Turma %s ja atribuida a %s." % (t.id(), t.professor.nome()))
+            logger.error(f"Turma {t.id()} ja atribuida a {t.professor.nome()}.")
 
         return
 
@@ -612,7 +562,7 @@ def _remove_from_(t, p):
     if t.vinculada and t.semestralidade == 1:
         cvinc = (t.id()).replace("S1", "S2")
 
-        logger.warn("Atencao. Verifique se professor ministra %s.", cvinc)
+        logger.warn(f"Atencao. Verifique se professor ministra {cvinc}")
 
         # if cvinc not in _course_search_id:
 
@@ -662,7 +612,7 @@ def _attribute_(*args):
         cour = args[1:]
 
         if name not in _professor_search_name:
-            logger.error("Nao encontrado docente: %s", name)
+            logger.error(f"Nao encontrado docente: {name}")
 
             return
 
@@ -670,7 +620,7 @@ def _attribute_(*args):
 
         for c in cour:
             if c not in _course_search_id:
-                logger.error("Nao encontrada turma: %s", c)
+                logger.error(f"Nao encontrada turma: {c}")
 
                 continue
 
@@ -699,7 +649,7 @@ def _show_(*args):
 
     if name not in _professor_search_name:
         if name not in _course_search_id:
-            logger.error("Nao encontrado: %s.", name)
+            logger.error(f"Nao encontrado: {name}.")
 
         else:
             print(_course_search_id[name])
@@ -776,7 +726,7 @@ def _check_(*args):
         name = args[0]
 
         if name not in _professor_search_name:
-            logger.error("Nao encontrado: %s.", name)
+            logger.error(f"Nao encontrado: {name}.")
 
         else:
             check.check_p(_professor_search_name[name], constantes)
@@ -787,7 +737,7 @@ def _check_(*args):
         cour = args[1:]
 
         if name not in _professor_search_name:
-            logger.error("Nao encontrado: %s.", name)
+            logger.error(f"Nao encontrado: {name}.")
 
             return
 
@@ -826,7 +776,7 @@ def _find_(*args):
     name = args[0]
 
     if name not in _course_professor_search:
-        logger.error("Turma nao encontrada: %s" % name)
+        logger.error(f"Turma nao encontrada: {name}")
 
         return
 
@@ -849,8 +799,7 @@ def _find_(*args):
         key=lambda x: x.nome() if t.grupo is None else (10 - x.pref_grupos[t.grupo.id]),
     ):
         print(
-            " %s: %d"
-            % (p.nome(), -1 if t.grupo is None else (10 - p.pref_grupos[t.grupo.id]))
+            f"{p.nome()}: {-1 if t.grupo is None else (10 - p.pref_grupos[t.grupo.id])}"
         )
 
 
@@ -874,7 +823,7 @@ def parse_command(command):
             if len(cmds) == 2:
                 _set_log_level_(cmds[1])
             else:
-                print("Usage: %s log_level" % cmds[0])
+                print(f"Usage: {cmds[0]} log_level")
 
         # elif cmds[0] == "set_paths":
         #     _PATHS_PATH = cmds[1]
@@ -910,7 +859,7 @@ def parse_command(command):
             _move_to_(*cmds[1:])
 
         else:
-            print("Unknown command %s" % cmds[0])
+            print(f"Unknown command {cmds[0]}")
 
 
 def mainfunc():
