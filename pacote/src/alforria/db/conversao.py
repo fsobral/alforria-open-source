@@ -11,6 +11,16 @@ def professor_para_orm(professor: Professor) -> ProfessorORM:
     )
 
 
+def turma_para_orm(turma: Turma) -> TurmaORM:
+    return TurmaORM(
+        id=turma.id,
+        nome=turma.nome,
+        codigo_disc=turma.codigo_disc,
+        numero_turma=turma.numero_turma,
+        semestralidade=turma.semestralidade,
+    )
+
+
 def professor_para_dominio(
     professor: ProfessorORM, *, incluir_turmas: bool = True
 ) -> Professor:
@@ -30,5 +40,10 @@ def professor_para_dominio(
 
 def turma_para_dominio(turma: TurmaORM, *, incluir_professor: bool = True) -> Turma:
 
-    t = Turma()
+    t = Turma(
+        codigo_disc=turma.codigo_disc,
+        nome=turma.nome,
+        numero_turma=turma.numero_turma,
+        semestralidade=turma.semestralidade,
+    )
     return t

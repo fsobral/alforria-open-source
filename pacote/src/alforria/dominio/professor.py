@@ -95,9 +95,10 @@ class Professor:
     def carga_horaria_total(self):
         return self.chprevia1 + self.chprevia2 + self.carga_horaria_atrib()
 
+    @property
     def id(self):
         # O certo sera return self.matricula, mas ainda nao funciona
-        return self.nome()
+        return self.matricula
 
     def nome(self):
         tok = self.nome_completo.split()

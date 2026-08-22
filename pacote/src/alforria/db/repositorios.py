@@ -4,12 +4,13 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from ..classes import Professor, Turma
-from .conversao import professor_para_orm
+from .conversao import professor_para_orm, turma_para_orm
 from .modelos import ProfessorORM, TurmaORM
 
 
 class RepositorioTurmas(Protocol):
     def buscar_por_id(self, id: str) -> Turma | None: ...
+    def salvar(self, turma: Turma) -> None: ...
 
 
 class RepositorioTurmasSQL(RepositorioTurmas):
@@ -17,7 +18,11 @@ class RepositorioTurmasSQL(RepositorioTurmas):
         self._session = session
 
     def buscar_por_id(self, id: str) -> Turma | None:
-        pass
+        return self._session.get(TurmaORM, id)
+
+    def salvar(self, turma: Turma) -> None:
+        orm = turma_para_orm(turma)
+        self._session.merge(orm)
 
 
 class RepositorioTurmasMemoria(RepositorioTurmas):
@@ -26,6 +31,9 @@ class RepositorioTurmasMemoria(RepositorioTurmas):
 
     def buscar_por_id(self, id: str) -> Turma | None:
         return self._dados.get(id)
+
+    def salvar(self, turma: Turma) -> None:
+        self._dados[turma.id] = turma
 
 
 class RepositorioProfessores(Protocol):

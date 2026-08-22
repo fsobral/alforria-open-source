@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, ForeignKey, MetaData, String
+from sqlalchemy import Boolean, ForeignKey, Integer, MetaData, SmallInteger, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -30,9 +30,14 @@ class ProfessorORM(Base):
 class TurmaORM(Base):
     __tablename__ = "turma"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
-    codigo: Mapped[str] = mapped_column(String)
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    nome: Mapped[str] = mapped_column(String)
+    codigo_disc: Mapped[str] = mapped_column(String)
+    numero_turma: Mapped[int] = mapped_column(Integer)
+    semestralidade: Mapped[int] = mapped_column(SmallInteger)
+
     grupo: Mapped[str] = mapped_column(String, nullable=True)
+
     professor_matricula: Mapped[str | None] = mapped_column(
         ForeignKey("professor.matricula"), nullable=True
     )
