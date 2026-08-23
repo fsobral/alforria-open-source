@@ -388,7 +388,6 @@ def _set_log_level_(level):
     print("Changed logger level")
 
 
-@rastreavel
 def _move_to_(*args):
     """Move a set o courses from a professor to another. Does not check
     overlapping courses.
@@ -441,11 +440,6 @@ def _move_to_(*args):
         _attribute_t_to_p(t, p_to)
 
 
-@inversa_de(_move_to_)
-def _(*args):
-    return _move_to_(args[1], args[0], args[2:])
-
-
 def _parse_turmas_gen_(cstr, course_fast_index):
     """Cria um gerador, listando apenas as turmas existentes na lista
     'cstr'self.
@@ -454,7 +448,7 @@ def _parse_turmas_gen_(cstr, course_fast_index):
 
     for c in cstr:
         if c not in course_fast_index:
-            logger.error("Turma %s nao encontrada. Ignorando." % c)
+            logger.error(f"Turma {c} nao encontrada. Ignorando.")
 
             continue
 
@@ -518,7 +512,6 @@ def _attribute_t_to_p(t, p):
     #     tvinc.add_professor(p)
 
 
-@rastreavel
 def _remove_(*args):
     """
     Remove the given courses from the given professor.
@@ -536,7 +529,7 @@ def _remove_(*args):
     cour = args[1:]
 
     if name not in _professor_search_name:
-        logger.error("Nao encontrado docente: %s", name)
+        logger.error(f"Nao encontrado docente: {name}")
 
         return
 
@@ -546,7 +539,6 @@ def _remove_(*args):
         _remove_from_(tc, p)
 
 
-@rastreavel
 def _remove_from_(t, p):
     """Remove turma 't' do professor 'p'. Se a turma eh anual, entao
     remove o segundo semestre tambem.
@@ -577,8 +569,6 @@ def _remove_from_(t, p):
         # tvinc.remove_professor(p)
 
 
-# inverso do remove
-@rastreavel
 def _attribute_(*args):
     """This function attributes courses to professors and professors to
     courses, according to the specified files or according to the arguments.
@@ -692,7 +682,7 @@ def _to_pdf_():
 
         escrita.cria_relatorio_geral(prof_ord, RELDIR)
 
-        escrita.escreve_pre_atribuidas(
+        escrita.escreve_pre_atribuidas(%
             professores, turmas, RELDIR + "pre_atribuidas.tsv"
         )
 
@@ -702,7 +692,7 @@ def _to_pdf_():
 
         escrita.write_ch_table(professores, RELDIR)
 
-        print("Report created in directory %s" % RELDIR)
+        print(f"Report created in directory {RELDIR}")
 
     else:
         print("Necessary to load data first.")
