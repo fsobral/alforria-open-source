@@ -1,4 +1,11 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy
+
+if TYPE_CHECKING:
+    from .turma import Turma
 
 
 class Professor:
@@ -12,7 +19,7 @@ class Professor:
         self.licenca1 = False
         self.licenca2 = False
         self.discriminacao_chprevia = None
-        self.temporario = False
+        self.temporario = temporario
         self.impedimentos = numpy.zeros((17, 8))
         self.peso_disciplinas = 0.0
         self.peso_disciplinas_bruto = 0.0
@@ -40,7 +47,7 @@ class Professor:
         self.observacoes = ""
 
         # --------------------------------Valores lidos no arquivo de solucao---------------------
-        self.turmas_a_lecionar = []
+        self.turmas_a_lecionar: list[Turma] = []
         self.carga_horaria = 0.0
         self.insatisfacao = 0.0
         self.insat_disciplinas = 0.0
@@ -60,11 +67,17 @@ class Professor:
         )
 
     def add_course(self, t):
-        self.turmas_a_lecionar.append(t)
-
-    def remove_course(self, t):
         if t in self.turmas_a_lecionar:
-            self.turmas_a_lecionar.remove(t)
+            return
+
+        self.turmas_a_lecionar.append(t)
+        t.add_professor(self)
+
+    def remove_course(self, t: Turma):
+        if t not in self.turmas_a_lecionar:
+            return
+        self.turmas_a_lecionar.remove(t)
+        t.remove_professor(self)
 
     def carga_horaria_atrib(self):
         ch = 0

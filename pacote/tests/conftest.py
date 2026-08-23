@@ -21,14 +21,19 @@ def session():
 
 
 @pytest.fixture(params=["sql", "memoria"])
-def repo_professores(request, session):
-    if request.param == "sql":
+def modo(request):
+    return request.param
+
+
+@pytest.fixture
+def repo_professores(modo, session):
+    if modo == "sql":
         return RepositorioProfessoresSQL(session)
     return RepositorioProfessoresMemoria()
 
 
-@pytest.fixture(params=["sql", "memoria"])
-def repo_turmas(request, session):
-    if request.param == "sql":
+@pytest.fixture
+def repo_turmas(modo, session):
+    if modo == "sql":
         return RepositorioTurmasSQL(session)
     return RepositorioTurmasMemoria()

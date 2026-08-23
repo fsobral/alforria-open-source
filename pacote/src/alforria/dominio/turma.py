@@ -1,7 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import numpy
 
-from .grupo import Grupo
-from .professor import Professor
+if TYPE_CHECKING:
+    from .grupo import Grupo
+    from .professor import Professor
 
 
 class Turma:
@@ -48,10 +53,17 @@ class Turma:
         else:
             return len(self.horarios)
 
-    def add_professor(self, p):
+    def add_professor(self, p: Professor):
         """Add a relation with professor 'p'."""
+        if self.professor is p:
+            return
         self.professor = p
+        p.add_course(self)
 
-    def remove_professor(self, p):
+    def remove_professor(self, p: Professor):
         """Remove the relation with professor 'p'."""
+        if self.professor is None:
+            return
+
         self.professor = None
+        p.remove_course(self)
